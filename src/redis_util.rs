@@ -1,13 +1,11 @@
 #![allow(unused)]
-
 use once_cell::sync::OnceCell;
 pub use redis;
 use redis::{
     aio::{ConnectionLike, MultiplexedConnection, PubSub},
-    AsyncCommands, Client, ConnectionAddr, ConnectionInfo, FromRedisValue, IntoConnectionInfo,
-    RedisConnectionInfo, RedisResult, ToRedisArgs,
+    AsyncCommands, Client, ConnectionAddr, ConnectionInfo, IntoConnectionInfo, RedisConnectionInfo,
+    RedisResult, ToRedisArgs,
 };
-use serde::ser::Serialize;
 use tokio::sync::mpsc::{self, Sender};
 use tokio::sync::oneshot::{self, Receiver};
 use tokio_stream::StreamExt;
@@ -72,6 +70,22 @@ pub async fn init(
             panic!("redis init failed, other: {:?}", other)
         }
     }
+
+    match sync::ping() {
+        Ok(redis::Value::Status(ref v)) => {
+            if v == "PONG" {
+                tracing::info!("redis init success");
+            } else {
+                panic!("redis init failed, status: {}", v);
+            }
+        }
+        Err(e) => {
+            panic!("redis init failed, error: {}", e)
+        }
+        other => {
+            panic!("redis init failed, other: {:?}", other)
+        }
+    }
 }
 
 pub async fn conn() -> RedisResult<MultiplexedConnection> {
@@ -115,67 +129,32 @@ where
     Ok((close_sender, close_done_receiver))
 }
 
-pub async fn set<'a, K, V>(k: K, v: V) -> RedisResult<()>
+pub async fn publish<K, V>(channel: K, v: V) -> RedisResult<()>
 where
-    K: ToRedisArgs + Send + Sync + 'a,
-    V: Serialize + ToRedisArgs + Send + Sync + 'a,
-{
-    conn().await?.set(k, v).await
-}
-
-pub async fn del<'a, K>(k: K) -> RedisResult<()>
-where
-    K: ToRedisArgs + Send + Sync + 'a,
-{
-    conn().await?.del(k).await
-}
-
-pub async fn publish<'a, K, V>(channel: K, v: V) -> RedisResult<()>
-where
-    K: ToRedisArgs + Send + Sync + 'a,
-    V: Serialize + ToRedisArgs + Send + Sync + 'a,
+    K: ToRedisArgs + Send + Sync,
+    V: ToRedisArgs + Send + Sync,
 {
     conn().await?.publish(channel, v).await
 }
 
-pub async fn set_nx<'a, K, V>(k: K, v: V) -> RedisResult<()>
-where
-    K: ToRedisArgs + Send + Sync + 'a,
-    V: Serialize + ToRedisArgs + Send + Sync + 'a,
-{
-    conn().await?.set_nx(k, v).await
-}
-
-pub async fn set_ex<'a, K, V>(k: K, v: V, seconds: u64) -> RedisResult<()>
-where
-    K: ToRedisArgs + Send + Sync + 'a,
-    V: Serialize + ToRedisArgs + Send + Sync + 'a,
-{
-    conn().await?.set_ex(k, v, seconds).await
-}
-
-pub async fn get<'a, K, V>(k: K) -> RedisResult<V>
-where
-    K: redis::ToRedisArgs + Send + Sync + 'a,
-    V: FromRedisValue,
-{
-    conn().await?.get::<_, V>(k).await
-}
-
-pub async fn ttl<'a, K>(k: K) -> RedisResult<u32>
-where
-    K: redis::ToRedisArgs + Send + Sync + 'a,
-{
-    conn().await?.ttl::<_, u32>(k).await
-}
-
-pub async fn exists<'a, K>(k: K) -> RedisResult<bool>
-where
-    K: redis::ToRedisArgs + Send + Sync + 'a,
-{
-    conn().await?.exists::<_, bool>(k).await
-}
-
 pub async fn ping() -> RedisResult<redis::Value> {
-    conn().await?.req_packed_command(&redis::cmd("ping")).await
+    conn().await?.req_packed_command(&redis::cmd("PING")).await
+}
+
+pub mod sync {
+    use redis::ConnectionLike;
+    use redis::{Connection, RedisResult};
+
+    use super::{CLIENT, CONFIG};
+
+    pub fn conn() -> RedisResult<Connection> {
+        let cfg = unsafe { CONFIG.get_unchecked() };
+        let client = CLIENT.get_or_init(|| redis::Client::open(cfg.clone()).unwrap());
+        let conn = client.get_connection()?;
+        Ok(conn)
+    }
+
+    pub fn ping() -> RedisResult<redis::Value> {
+        conn()?.req_command(&redis::cmd("PING"))
+    }
 }

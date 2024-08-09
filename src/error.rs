@@ -7,13 +7,13 @@ use serde::Serialize;
 use axum_extra::typed_header::TypedHeaderRejection;
 use jsonwebtoken::errors::Error as JwtError;
 use redis::RedisError;
+use std::fmt::Display;
 pub use thiserror::Error;
 use utoipa::ToSchema;
-use std::fmt::Display;
 
 pub(crate) type AppResult<T> = std::result::Result<T, AppError>;
 
-#[derive(Debug,Error)]
+#[derive(Debug, Error)]
 pub enum AuthError {
     WrongCredentials,
     MissingCredentials,

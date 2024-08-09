@@ -1,10 +1,10 @@
+#![allow(unused)]
 use once_cell::sync::Lazy;
 
 #[derive(Debug)]
 pub struct Env {
     pub port: u16,
     pub rust_log: String,
-    #[allow(unused)]
     pub jwt_secret: String,
     pub token_valid_duraiton: usize,
     pub meilisearch_address: String,

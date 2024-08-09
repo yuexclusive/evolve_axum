@@ -4,7 +4,7 @@ use crate::model::user::{self as user_model, UserStatus, UserType};
 use crate::response::Pagination;
 use chrono::{DateTime, Utc};
 
-use crate::postgres::{conn, SqlResult};
+use crate::postgres_util::{conn, SqlResult};
 
 #[derive(Debug, Clone)]
 pub struct User {

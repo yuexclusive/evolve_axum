@@ -16,6 +16,7 @@ struct Config {
     port: u16,
 }
 
+#[allow(unused)]
 pub async fn init(from: &str, pwd: &str, relay: &str, port: u16) {
     unsafe {
         CONFIG.get_or_init(|| Config {

@@ -39,7 +39,7 @@ impl Keys {
 static KEYS: Lazy<Keys> = Lazy::new(|| Keys::new(ENV.jwt_secret.as_bytes()));
 
 /** The Claims struct represents the data that will be encoded into the JWT. */
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, Debug)]
 pub struct Claims {
     /** The `sub` (subject) value is always the user ID. */
     pub sub: String,
@@ -66,7 +66,7 @@ impl AuthResp {
     }
 }
 
-#[derive(Serialize, Deserialize, ToSchema, Clone)]
+#[derive(Serialize, Deserialize, ToSchema, Clone, Debug)]
 pub enum AuthorizeType {
     APP,
     User,

@@ -2,19 +2,20 @@
 
 mod api;
 mod api_doc;
-mod chat;
 mod dao;
 mod datetime;
 mod email;
 mod env;
 mod error;
-mod meilisearch;
+mod meilisearch_util;
 mod model;
-mod postgres;
-mod redis;
+mod postgres_util;
+mod redis_util;
 mod response;
 mod service;
+mod ws;
 
+use crate::redis_util::derive::{from_redis, to_redis};
 use crate::service::user as user_service;
 use api::auth as api_jwt;
 use api::user as api_user;
@@ -42,12 +43,25 @@ use utoipa_scalar::{Scalar, Servable as ScalarServable};
 use utoipa_swagger_ui::SwaggerUi;
 
 use std::{
-    collections::HashSet,
+    collections::HashMap,
     sync::{Arc, Mutex},
 };
 use tokio::sync::broadcast;
 
-use chat::{index, websocket_handler, AppState};
+use serde::{Deserialize, Serialize};
+use tower_http::services::ServeDir;
+
+use ws::{
+    chat::{index, websocket_handler},
+    memory_hub::MemoryHub,
+};
+
+#[from_redis]
+#[to_redis]
+pub struct TestRedisData {
+    name: String,
+    age: i32,
+}
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn Error>> {
@@ -67,10 +81,10 @@ async fn main() -> Result<(), Box<dyn Error>> {
         .init();
 
     // init postgres connection
-    postgres::init();
+    postgres_util::init();
 
     // init redis
-    redis::init(
+    redis_util::init(
         &ENV.redis_host,
         ENV.redis_port,
         ENV.redis_username.clone(),
@@ -79,22 +93,25 @@ async fn main() -> Result<(), Box<dyn Error>> {
     .await;
 
     // init meilisearch
-    meilisearch::init(&ENV.meilisearch_address, &ENV.meilisearch_api_key).await;
+    meilisearch_util::init(&ENV.meilisearch_address, &ENV.meilisearch_api_key).await;
 
     // load user search data
     user_service::load_search().await?;
 
-    // init mail
-    email::init(
-        &ENV.email_username,
-        &ENV.email_password,
-        &ENV.email_relay,
-        ENV.email_port,
-    )
-    .await;
+    // // init mail
+    // email::init(
+    //     &ENV.email_username,
+    //     &ENV.email_password,
+    //     &ENV.email_relay,
+    //     ENV.email_port,
+    // )
+    // .await;
 
     // start servers
-    tokio::join!(serve(web_service(), ENV.port),);
+    tokio::join!(
+        serve(web_service(), ENV.port),
+        serve(using_serve_dir(), 3001)
+    );
 
     Ok(())
 }
@@ -119,6 +136,11 @@ async fn serve(app: Router, port: u16) {
     )
     .await
     .unwrap();
+}
+
+fn using_serve_dir() -> Router {
+    // serve the file in the "assets" directory under `/assets`
+    Router::new().nest_service("/static", ServeDir::new("static"))
 }
 
 fn web_service() -> Router {
@@ -155,10 +177,11 @@ fn web_service() -> Router {
         );
 
     // websocket
-    let user_set = Mutex::new(HashSet::new());
+    let room_user_set = Mutex::new(HashMap::new());
+    let user_room_set = Mutex::new(HashMap::new());
     let (tx, _rx) = broadcast::channel(100);
-
-    let app_state = Arc::new(AppState { user_set, tx });
+    let hub = MemoryHub::new(room_user_set, user_room_set);
+    let app_state = Arc::new((hub, tx));
 
     let app = app
         .route("/chat", get(index))
