@@ -1,0 +1,3 @@
+[workspace]
+resolver = "1"
+members = ["evolve_axum", "evolve_axum_reverse_proxy", "redis_encoding_derive"]
