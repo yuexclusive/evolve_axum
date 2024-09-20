@@ -93,7 +93,6 @@ pub struct SearchedUser {
     // formatter: Map<String, Value>,
 }
 
-// #[derive(Debug, Clone, Serialize, Deserialize, ToRedisArgs, FromRedisValue, ToSchema)]
 #[derive(ToSchema, Serialize)]
 pub struct CurrentUser {
     pub id: i64,

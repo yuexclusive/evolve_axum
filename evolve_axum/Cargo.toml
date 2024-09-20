@@ -30,9 +30,15 @@ tracing-subscriber = { version = "0.3.18", features = ["env-filter"] }
 utoipa = { git = "https://github.com/juhaku/utoipa.git", branch = "master", features = [
     "axum_extras",
 ] }
-utoipa-scalar = { git = "https://github.com/juhaku/utoipa.git", branch = "master", features = [
+# utoipa-redoc = { git = "https://github.com/juhaku/utoipa.git", branch = "master", features = [
+#     "axum",
+# ] }
+utoipa-rapidoc = { git = "https://github.com/juhaku/utoipa.git", branch = "master", features = [
     "axum",
 ] }
+# utoipa-scalar = { git = "https://github.com/juhaku/utoipa.git", branch = "master", features = [
+#     "axum",
+# ] }
 utoipa-swagger-ui = { git = "https://github.com/juhaku/utoipa.git", branch = "master", features = [
     "axum",
 ] }

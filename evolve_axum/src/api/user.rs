@@ -116,7 +116,7 @@ pub async fn register(req: Json<RegisterReq>) -> Result<Json<MsgResp>, AppError>
     get,
     path = "/validate_exist_email/{email}",
     params(
-        ("email", description = "email")
+        ("email", description = "email", example = "yu.exclusive@icloud.com")
     ),
     responses(
         (status = 200, description = "successfully", body = MsgResp),
@@ -124,7 +124,9 @@ pub async fn register(req: Json<RegisterReq>) -> Result<Json<MsgResp>, AppError>
         (status = 500, description = "internal server error", body = ErrorResp)
     )
 )]
-pub async fn validate_exist_email(Path(email): Path<String>) -> Result<Json<MsgResp>, AppError> {
+pub async fn validate_exist_email(
+    Path((_v, email)): Path<(String, String)>,
+) -> Result<Json<MsgResp>, AppError> {
     user_service::validate_exist_email(&email).await?;
 
     Ok(Json(msg("ok")))

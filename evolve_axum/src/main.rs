@@ -41,7 +41,9 @@ use tower_http::{
 use tracing::{instrument, Level};
 use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
 use utoipa::OpenApi;
-use utoipa_scalar::{Scalar, Servable as ScalarServable};
+use utoipa_rapidoc::RapiDoc;
+// use utoipa_redoc::{Redoc, Servable};
+// use utoipa_scalar::{Scalar, Servable as ScalarServable};
 use utoipa_swagger_ui::SwaggerUi;
 use ws::chat_redis::WSState;
 
@@ -97,14 +99,14 @@ async fn main() -> Result<(), Box<dyn Error>> {
     // load user search data
     user_service::load_search().await?;
 
-    // // init mail
-    // email::init(
-    //     &ENV.email_username,
-    //     &ENV.email_password,
-    //     &ENV.email_relay,
-    //     ENV.email_port,
-    // )
-    // .await;
+    // init mail
+    email::init(
+        &ENV.email_username,
+        &ENV.email_password,
+        &ENV.email_relay,
+        ENV.email_port,
+    )
+    .await;
 
     // start servers
     tokio::join!(
@@ -184,11 +186,11 @@ fn web_service() -> Router {
         .route("/user/change_pwd", post(api_user::change_pwd))
         .route("/user/register", post(api_user::register))
         .route(
-            "/validate_exist_email/:email",
+            "/user/validate_exist_email/:email",
             get(api_user::validate_exist_email),
         )
         .route(
-            "/validate_not_exist_email/:email",
+            "/user/validate_not_exist_email/:email",
             get(api_user::validate_not_exist_email),
         )
         .route("/user/search", get(api_user::search))
@@ -215,7 +217,9 @@ fn web_service() -> Router {
         .nest("/:version", api_routes)
         .merge(ws_routes)
         .merge(SwaggerUi::new("/swagger-ui").url("/api-docs/openapi.json", ApiDoc::openapi()))
-        .merge(Scalar::with_url("/scalar", ApiDoc::openapi()));
+        // .merge(Redoc::with_url("/redoc", ApiDoc::openapi()))
+        // .merge(Scalar::with_url("/scalar", ApiDoc::openapi()))
+        .merge(RapiDoc::new("/api-docs/openapi.json").path("/rapidoc"));
 
     app
 }

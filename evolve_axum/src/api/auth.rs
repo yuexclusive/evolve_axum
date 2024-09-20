@@ -11,7 +11,7 @@ use axum_extra::{
     },
     TypedHeader,
 };
-use jsonwebtoken::{decode, encode, DecodingKey, EncodingKey, Header, Validation};
+use jsonwebtoken::{DecodingKey, EncodingKey, Header, Validation};
 use once_cell::sync::Lazy;
 use serde::{Deserialize, Serialize};
 use utoipa::{OpenApi, ToSchema};
@@ -75,13 +75,10 @@ pub enum AuthorizeType {
 
 #[derive(Serialize, Deserialize, ToSchema, Clone)]
 pub struct AuthReq {
-    /// id
     #[schema(default = "yu.exclusive@icloud.com")]
     id: String,
-    /// secret
     #[schema(default = "a111111")]
     secret: String,
-    /// authorize type: APP/Enterprise/User
     #[schema(default = "User")]
     authorize_type: AuthorizeType,
 }
@@ -129,7 +126,7 @@ pub async fn authorize(Json(req): Json<AuthReq>) -> Result<Json<AuthResp>, AppEr
     };
     // create the authorization token
     // you can change algirithm with Header::new(jsonwebtoken::Algorithm::HS256)
-    let token = encode(&Header::default(), &claims, &KEYS.encoding)
+    let token = jsonwebtoken::encode(&Header::default(), &claims, &KEYS.encoding)
         .map_err(|_| AuthError::TokenCreation)?;
 
     // Send the authorized token
@@ -184,7 +181,8 @@ where
             .await?;
 
         // Decode the user data
-        let token_data = decode::<Claims>(bearer.token(), &KEYS.decoding, &Validation::default())?;
+        let token_data =
+            jsonwebtoken::decode::<Claims>(bearer.token(), &KEYS.decoding, &Validation::default())?;
 
         Ok(token_data.claims)
     }

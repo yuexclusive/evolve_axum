@@ -9,9 +9,9 @@ pub struct MsgResp {
 
 #[derive(Deserialize, IntoParams)]
 pub struct Pagination {
-    #[param(default = 1)]
+    #[param(example = 1)]
     pub index: i64,
-    #[param(default = 22)]
+    #[param(example = 20)]
     pub size: i64,
 }
 
