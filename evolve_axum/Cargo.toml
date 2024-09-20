@@ -43,7 +43,7 @@ utoipa-swagger-ui = { git = "https://github.com/juhaku/utoipa.git", branch = "ma
     "axum",
 ] }
 
-redis_encoding_derive = { path = "../redis_encoding_derive" }
+redis_encoding_derive = { path = "./redis_encoding_derive" }
 meilisearch-sdk = { version = "0.22" }
 lazy_static = "1.5.0"
 futures = "0.3.30"
