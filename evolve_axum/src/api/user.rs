@@ -145,7 +145,7 @@ pub async fn validate_exist_email(
     )
 )]
 pub async fn validate_not_exist_email(
-    Path(email): Path<String>,
+    Path((_v, email)): Path<(String, String)>,
 ) -> Result<Json<MsgResp>, AppError> {
     user_service::validate_not_exist_email(&email).await?;
 

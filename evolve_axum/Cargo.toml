@@ -55,6 +55,8 @@ uuid = "1.9.1"
 lettre = "0.11.7"
 # 这里是为了解决交叉编译的时候缺少对应操作系统版本的openssl报错的问题
 openssl = { version = "0.10.64", features = ["vendored"] }
+metrics = { version = "0.23", default-features = false }
+metrics-exporter-prometheus = { version = "0.15", default-features = false }
 
 [dev-dependencies]
 http-body-util = "0.1.0"

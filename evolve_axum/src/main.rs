@@ -1,5 +1,5 @@
 // #![allow(unused)]
-
+#![allow(static_mut_refs)]
 mod api;
 mod api_doc;
 mod dao;
@@ -20,6 +20,9 @@ use crate::service::user as user_service;
 use api::auth as api_jwt;
 use api::user as api_user;
 use api_doc::ApiDoc;
+use axum::extract::{MatchedPath, Request};
+use axum::middleware::{self, Next};
+use axum::response::IntoResponse;
 use axum::Json;
 use axum::{
     routing::any,
@@ -27,6 +30,9 @@ use axum::{
     Router,
 };
 use env::ENV;
+use metrics_exporter_prometheus::{Matcher, PrometheusBuilder, PrometheusHandle};
+use std::future::ready;
+use std::time::Instant;
 use std::{
     error::Error,
     net::{Ipv4Addr, SocketAddr},
@@ -99,19 +105,21 @@ async fn main() -> Result<(), Box<dyn Error>> {
     // load user search data
     user_service::load_search().await?;
 
-    // init mail
-    email::init(
-        &ENV.email_username,
-        &ENV.email_password,
-        &ENV.email_relay,
-        ENV.email_port,
-    )
-    .await;
+    // // init mail
+    // email::init(
+    //     &ENV.email_username,
+    //     &ENV.email_password,
+    //     &ENV.email_relay,
+    //     ENV.email_port,
+    // )
+    // .await;
 
     // start servers
     tokio::join!(
-        serve(web_service(), 3000, true),
-        // serve(serve_dir(), 3001, false)
+        serve(web_server(), 3000, true),
+        // start_metrics_server(),
+        // serve(dir_server(), 3001, false),
+        serve(metrics_app(), 3009, false)
     );
 
     Ok(())
@@ -172,13 +180,59 @@ async fn shutdown_signal(clear_sessions: bool) {
     }
 }
 
+fn metrics_app() -> Router {
+    let recorder_handle = setup_metrics_recorder();
+    Router::new().route("/metrics", get(move || ready(recorder_handle.render())))
+}
+
+fn setup_metrics_recorder() -> PrometheusHandle {
+    const EXPONENTIAL_SECONDS: &[f64] = &[
+        0.005, 0.01, 0.025, 0.05, 0.1, 0.25, 0.5, 1.0, 2.5, 5.0, 10.0,
+    ];
+
+    PrometheusBuilder::new()
+        .set_buckets_for_metric(
+            Matcher::Full("http_requests_duration_seconds".to_string()),
+            EXPONENTIAL_SECONDS,
+        )
+        .unwrap()
+        .install_recorder()
+        .unwrap()
+}
+
+async fn track_metrics(req: Request, next: Next) -> impl IntoResponse {
+    let start = Instant::now();
+    let path = if let Some(matched_path) = req.extensions().get::<MatchedPath>() {
+        matched_path.as_str().to_owned()
+    } else {
+        req.uri().path().to_owned()
+    };
+    let method = req.method().clone();
+
+    let response = next.run(req).await;
+
+    let latency = start.elapsed().as_secs_f64();
+    let status = response.status().as_u16().to_string();
+
+    let labels = [
+        ("method", method.to_string()),
+        ("path", path),
+        ("status", status),
+    ];
+
+    metrics::counter!("http_requests_total", &labels).increment(1);
+    metrics::histogram!("http_requests_duration_seconds", &labels).record(latency);
+
+    response
+}
+
 #[allow(unused)]
-fn serve_dir() -> Router {
+fn dir_server() -> Router {
     // serve the file in the "assets" directory under `/assets`
     Router::new().nest_service("/static", ServeDir::new("static"))
 }
 
-fn web_service() -> Router {
+fn web_server() -> Router {
     let api_routes = Router::new()
         .route("/auth/authorize", post(api_jwt::authorize))
         .route("/auth/user_info", get(api_jwt::user_info))
@@ -202,7 +256,8 @@ fn web_service() -> Router {
                 .allow_origin(Any)
                 .allow_methods(Any)
                 .allow_headers(Any),
-        );
+        )
+        .route_layer(middleware::from_fn(track_metrics));
 
     let ws_state = Arc::new(WSState::new(RedisStore::default()));
 
@@ -248,7 +303,7 @@ mod tests {
 
     #[tokio::test]
     async fn ping() {
-        let router = web_service();
+        let router = web_server();
         // `Router` implements `tower::Service<Request<Body>>` so we can
         // call it like any tower service, no need to run an HTTP server.
         let response = router
@@ -264,7 +319,7 @@ mod tests {
 
     #[tokio::test]
     async fn version() {
-        let router = web_service();
+        let router = web_server();
 
         let response = router
             .oneshot(
