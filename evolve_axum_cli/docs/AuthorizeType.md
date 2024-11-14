@@ -4,8 +4,8 @@
 
 | Name | Value |
 |---- | -----|
-| App | APP |
 | User | User |
+| App | APP |
 | Enterprise | Enterprise |
 
 

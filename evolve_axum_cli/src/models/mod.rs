@@ -1,5 +1,7 @@
 pub mod auth_req;
 pub use self::auth_req::AuthReq;
+pub mod auth_req_authorize_type;
+pub use self::auth_req_authorize_type::AuthReqAuthorizeType;
 pub mod auth_resp;
 pub use self::auth_resp::AuthResp;
 pub mod authorize_type;
@@ -20,6 +22,8 @@ pub mod send_email_code_from;
 pub use self::send_email_code_from::SendEmailCodeFrom;
 pub mod send_email_code_req;
 pub use self::send_email_code_req::SendEmailCodeReq;
+pub mod send_email_code_req_from;
+pub use self::send_email_code_req_from::SendEmailCodeReqFrom;
 pub mod send_email_code_resp;
 pub use self::send_email_code_resp::SendEmailCodeResp;
 pub mod user;

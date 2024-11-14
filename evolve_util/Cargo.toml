@@ -1,0 +1,17 @@
+[package]
+name = "evolve_util"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+meilisearch-sdk = "0"
+once_cell = "1"
+tracing = "0"
+async_once = "0"
+sqlx = "0"
+dotenv = "0"
+redis = { version = "0", features = ["tokio-comp"] }
+tokio = "1"
+tokio-stream = "0"
+redis_encoding_derive = { path = "../redis_encoding_derive" }
+evolve_error = { path = "../evolve_error" }

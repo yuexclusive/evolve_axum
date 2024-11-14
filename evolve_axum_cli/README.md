@@ -42,6 +42,7 @@ Class | Method | HTTP request | Description
 ## Documentation For Models
 
  - [AuthReq](docs/AuthReq.md)
+ - [AuthReqAuthorizeType](docs/AuthReqAuthorizeType.md)
  - [AuthResp](docs/AuthResp.md)
  - [AuthorizeType](docs/AuthorizeType.md)
  - [ChangePasswordReq](docs/ChangePasswordReq.md)
@@ -52,6 +53,7 @@ Class | Method | HTTP request | Description
  - [SearchedUser](docs/SearchedUser.md)
  - [SendEmailCodeFrom](docs/SendEmailCodeFrom.md)
  - [SendEmailCodeReq](docs/SendEmailCodeReq.md)
+ - [SendEmailCodeReqFrom](docs/SendEmailCodeReqFrom.md)
  - [SendEmailCodeResp](docs/SendEmailCodeResp.md)
  - [User](docs/User.md)
  - [UserDeleteReq](docs/UserDeleteReq.md)

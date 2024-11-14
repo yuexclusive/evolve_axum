@@ -138,8 +138,8 @@ No authorization required
 
 Name | Type | Description  | Required | Notes
 ------------- | ------------- | ------------- | ------------- | -------------
-**index** | **i64** |  | [required] |[default to 1]
-**size** | **i64** |  | [required] |[default to 22]
+**index** | **i64** |  | [required] |
+**size** | **i64** |  | [required] |
 **key_word** | Option<**String**> |  |  |
 
 ### Return type

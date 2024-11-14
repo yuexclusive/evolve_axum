@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8" />
+  <title>Chat!</title>
+
+  <style>
+    :root {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
+        Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+      font-size: 18px;
+    }
+
+    input[type='text'] {
+      font-size: inherit;
+    }
+
+    #log {
+      width: 30em;
+      height: 20em;
+      overflow: auto;
+      margin: 0.5em 0;
+
+      border: 1px solid black;
+    }
+
+    #status {
+      padding: 0 0.2em;
+    }
+
+    #text {
+      width: 17em;
+      padding: 0.5em;
+    }
+
+    .msg {
+      margin: 0;
+      padding: 0.25em 0.5em;
+    }
+
+    .msg--status {
+      /* a light yellow */
+      background-color: #ffffc9;
+    }
+
+    .msg--message {
+      /* a light blue */
+      background-color: #d2f4ff;
+    }
+
+    .msg--error {
+      background-color: pink;
+    }
+  </style>
+</head>
+
+<body>
+  <h1>Chat!</h1>
+
+  <div>
+    <button id="connect">Connect</button>
+    <span>Status:</span>
+    <span id="status">disconnected</span>
+    <span>Name:</span>
+    <span id="name"></span>
+    <span>Room:</span>
+    <select id="rooms"></select>
+    <span id="room"></span>
+  </div>
+
+  <div id="log"></div>
+
+  <form id="chatform">
+    <input type="text" id="text" />
+    <input type="submit" id="send" />
+  </form>
+
+  <hr />
+
+  <section>
+    <h2>Commands</h2>
+    <table style="border-spacing: 0.5em">
+      <tr>
+        <td>
+          <code>/list</code>
+        </td>
+        <td>list all available rooms</td>
+      </tr>
+      <tr>
+        <td>
+          <code>/join name</code>
+        </td>
+        <td>join room, if room does not exist, create new one</td>
+      </tr>
+      <tr>
+        <td>
+          <code>/quit name</code>
+        </td>
+        <td>quit room</td>
+      </tr>
+      <tr>
+        <td>
+          <code>/name name</code>
+        </td>
+        <td>set user name</td>
+      </tr>
+      <tr>
+        <td>
+          <code>some message</code>
+        </td>
+        <td>just string, send message to all peers in same room</td>
+      </tr>
+    </table>
+  </section>
+
+  <script>
+    const $status = document.querySelector('#status')
+    const $name = document.querySelector('#name')
+    const $room = document.querySelector('#room')
+    const $rooms = document.querySelector('#rooms')
+    const $connectButton = document.querySelector('#connect')
+    const $log = document.querySelector('#log')
+    const $form = document.querySelector('#chatform')
+    const $input = document.querySelector('#text')
+
+
+    /** @type {WebSocket | null} */
+    var socket = null
+
+    function reload_rooms(rooms) {
+      delete_room_option_all()
+
+
+      for (let i = 0; i < rooms.length; i++) {
+        let option = document.createElement("option");
+        option.value = rooms[i];
+        option.text = rooms[i];
+        $rooms.add(option);
+      }
+      $rooms.value = rooms[0];
+    }
+
+    function delete_room_option_all() {
+      // 获取select元素
+      let count = $rooms.options.length;
+      // 遍历options
+      for (var i = count - 1; i >= 0; i--) {
+        // 判断是否是需要删除的option
+        // 删除option
+        $rooms.remove(i);
+      }
+    }
+
+    function log(msg, type = 'status') {
+      $log.innerHTML += `<p class="msg msg--${type}">${msg}</p>`
+      $log.scrollTop += 1000
+    }
+
+    function connect() {
+      disconnect()
+
+
+      const { location } = window
+
+      const proto = location.protocol.startsWith('https') ? 'wss' : 'ws'
+      const wsUri = `${proto}://${location.host}/websocket`
+
+      log('Connecting...')
+      socket = new WebSocket(wsUri)
+
+      socket.onopen = () => {
+        log('Connected')
+        updateConnectionStatus()
+      }
+
+      socket.onmessage = (ev) => {
+        let str = ev.data.toString()
+        if (str.length > 5 && str.substr(0, 5) == "list:") {
+          let message = str.substr(5);
+          let obj = JSON.parse(message);
+          for (room in obj) {
+            log("room: " + room)
+            for (uid in obj[room]) {
+              log("------uname: " + obj[room][uid])
+            }
+          }
+        } else if (str.length > 10 && str.substr(0, 10) == "join_room:") {
+          let message = str.substr(10);
+          let obj = JSON.parse(message);
+          if (obj.from_self) {
+            console.log(obj.rooms);
+            $name.textContent = obj.uname
+            reload_rooms(obj.rooms);
+          }
+          log("" + obj.uname + " join room: " + obj.room)
+        } else if (str.length > 10 && str.substr(0, 10) == "quit_room:") {
+          let message = str.substr(10);
+          let obj = JSON.parse(message);
+          log("" + obj.uname + " quit from: " + obj.room)
+        } else if (str.length > 13 && str.substr(0, 13) == "update_uname:") {
+          let message = str.substr(13);
+          let obj = JSON.parse(message);
+          $name.textContent = obj.uname
+          log(obj.old_uname + " change name to: " + obj.uname)
+        } else if (str.length > 8 && str.substr(0, 8) == "message:") {
+          let message = str.substr(8);
+          let obj = JSON.parse(message);
+          reload_rooms(obj.rooms);
+          log("【" + obj.room + "】" + obj.from_uname + ": " + obj.content)
+        } else if (str.length > 7 && str.substr(0, 7) == "notify:") {
+          let message = str.substr(7);
+          log(message)
+        } else if (str.length > 6 && str.substr(0, 6) == "rooms:") {
+          let message = str.substr(6);
+          let rooms = JSON.parse(message);
+          reload_rooms(rooms);
+        } else {
+          log(str)
+        }
+      }
+
+      socket.onclose = () => {
+        log('Disconnected')
+        socket = null
+        updateConnectionStatus()
+      }
+    }
+
+    function disconnect() {
+      if (socket) {
+        $name.textContent = ""
+        delete_room_option_all()
+        log('Disconnecting...')
+        socket.close()
+        socket = null
+        updateConnectionStatus()
+      }
+    }
+
+    function updateConnectionStatus() {
+      if (socket) {
+        $status.style.backgroundColor = 'transparent'
+        $status.style.color = 'green'
+        $status.textContent = `connected`
+        $connectButton.innerHTML = 'Disconnect'
+        $input.focus()
+      } else {
+        $status.style.backgroundColor = 'red'
+        $status.style.color = 'white'
+        $status.textContent = 'disconnected'
+        $connectButton.textContent = 'Connect'
+      }
+    }
+
+    $connectButton.addEventListener('click', () => {
+      if (socket) {
+        disconnect()
+      } else {
+        connect()
+      }
+
+      updateConnectionStatus()
+    })
+
+    $form.addEventListener('submit', (ev) => {
+      ev.preventDefault()
+
+      const text = $input.value
+
+      log('Sending: ' + text)
+
+      if (text.startsWith("/join") || text.startsWith("/quit") || text.startsWith("/list") || text.startsWith("/name")) {
+        socket.send(text)
+      } else {
+        socket.send("【" + $rooms.value + "】" + text)
+      }
+      $input.value = ''
+      $input.focus()
+    })
+
+    updateConnectionStatus()
+
+  </script>
+</body>
+
+</html>

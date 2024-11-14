@@ -4,6 +4,7 @@ Cargo.toml
 README.md
 docs/AuthApi.md
 docs/AuthReq.md
+docs/AuthReqAuthorizeType.md
 docs/AuthResp.md
 docs/AuthorizeType.md
 docs/ChangePasswordReq.md
@@ -14,6 +15,7 @@ docs/RegisterReq.md
 docs/SearchedUser.md
 docs/SendEmailCodeFrom.md
 docs/SendEmailCodeReq.md
+docs/SendEmailCodeReqFrom.md
 docs/SendEmailCodeResp.md
 docs/User.md
 docs/UserApi.md
@@ -33,6 +35,7 @@ src/apis/mod.rs
 src/apis/user_api.rs
 src/lib.rs
 src/models/auth_req.rs
+src/models/auth_req_authorize_type.rs
 src/models/auth_resp.rs
 src/models/authorize_type.rs
 src/models/change_password_req.rs
@@ -44,6 +47,7 @@ src/models/register_req.rs
 src/models/searched_user.rs
 src/models/send_email_code_from.rs
 src/models/send_email_code_req.rs
+src/models/send_email_code_req_from.rs
 src/models/send_email_code_resp.rs
 src/models/user.rs
 src/models/user_delete_req.rs

@@ -1,0 +1,18 @@
+[package]
+name = "evolve_error"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+axum = "0"
+axum-extra = { version = "0", features = ["typed-header"] }
+serde = "1"
+jsonwebtoken = "9"
+redis = "0"
+thiserror = "1"
+utoipa = { git = "https://github.com/juhaku/utoipa.git", branch = "master" }
+chrono = "0"
+sqlx = "0"
+meilisearch-sdk = "0"
+lettre = "0"
+fancy-regex = "0"
