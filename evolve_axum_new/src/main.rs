@@ -3,19 +3,13 @@
 mod api;
 mod api_doc;
 // mod dao;
-mod email;
 mod env;
-mod response;
 mod service;
-mod ws;
 
 use crate::service::user as user_service;
 use api::auth as api_jwt;
 use api::user as api_user;
 use api_doc::ApiDoc;
-use axum::extract::{MatchedPath, Request};
-use axum::middleware::{self, Next};
-use axum::response::IntoResponse;
 use axum::Json;
 use axum::{
     routing::any,
@@ -23,11 +17,7 @@ use axum::{
     Router,
 };
 use env::ENV;
-use evolve_util::redis_util::derive::{from_redis, to_redis};
 use evolve_util::{meilisearch_util, postgres_util, redis_util};
-use metrics_exporter_prometheus::{Matcher, PrometheusBuilder, PrometheusHandle};
-use std::future::ready;
-use std::time::Instant;
 use std::{
     error::Error,
     net::{Ipv4Addr, SocketAddr},
@@ -45,25 +35,17 @@ use utoipa::OpenApi;
 use utoipa_rapidoc::RapiDoc;
 // use utoipa_redoc::{Redoc, Servable};
 // use utoipa_scalar::{Scalar, Servable as ScalarServable};
+use evolve_axum_ws::chat_redis::WSState;
 use utoipa_swagger_ui::SwaggerUi;
-use ws::chat_redis::WSState;
 
 use std::sync::Arc;
 
-use serde::{Deserialize, Serialize};
 use tower_http::services::ServeDir;
 
-use ws::{
+use evolve_axum_ws::{
     chat_redis::{index, websocket_handler},
     store_redis::RedisStore,
 };
-
-#[from_redis]
-#[to_redis]
-pub struct TestRedisData {
-    name: String,
-    age: i32,
-}
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn Error>> {
@@ -101,7 +83,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
     user_service::load_search().await?;
 
     // // init mail
-    // email::init(
+    // evolve_mailer::init(
     //     &ENV.email_username,
     //     &ENV.email_password,
     //     &ENV.email_relay,
@@ -112,9 +94,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
     // start servers
     tokio::join!(
         serve(web_server(), 3000, true),
-        // start_metrics_server(),
         // serve(dir_server(), 3001, false),
-        serve(metrics_app(), 3009, false)
     );
 
     Ok(())
@@ -164,7 +144,7 @@ async fn shutdown_signal(clear_sessions: bool) {
     tokio::select! {
         _ = ctrl_c => {
             if clear_sessions {
-                evolve_axum_dao::redis::lua_script::clear_sessions().unwrap();
+                evolve_axum_ws::lua_script::clear_sessions().unwrap();
                 tracing::debug!("clear sessions done");
             }
             tracing::debug!("Ctrl+C received");
@@ -173,52 +153,6 @@ async fn shutdown_signal(clear_sessions: bool) {
             tracing::debug!("terminate signal received");
         },
     }
-}
-
-fn metrics_app() -> Router {
-    let recorder_handle = setup_metrics_recorder();
-    Router::new().route("/metrics", get(move || ready(recorder_handle.render())))
-}
-
-fn setup_metrics_recorder() -> PrometheusHandle {
-    const EXPONENTIAL_SECONDS: &[f64] = &[
-        0.005, 0.01, 0.025, 0.05, 0.1, 0.25, 0.5, 1.0, 2.5, 5.0, 10.0,
-    ];
-
-    PrometheusBuilder::new()
-        .set_buckets_for_metric(
-            Matcher::Full("http_requests_duration_seconds".to_string()),
-            EXPONENTIAL_SECONDS,
-        )
-        .unwrap()
-        .install_recorder()
-        .unwrap()
-}
-
-async fn track_metrics(req: Request, next: Next) -> impl IntoResponse {
-    let start = Instant::now();
-    let path = if let Some(matched_path) = req.extensions().get::<MatchedPath>() {
-        matched_path.as_str().to_owned()
-    } else {
-        req.uri().path().to_owned()
-    };
-    let method = req.method().clone();
-
-    let response = next.run(req).await;
-
-    let latency = start.elapsed().as_secs_f64();
-    let status = response.status().as_u16().to_string();
-
-    let labels = [
-        ("method", method.to_string()),
-        ("path", path),
-        ("status", status),
-    ];
-
-    metrics::counter!("http_requests_total", &labels).increment(1);
-    metrics::histogram!("http_requests_duration_seconds", &labels).record(latency);
-
-    response
 }
 
 #[allow(unused)]
@@ -251,8 +185,7 @@ fn web_server() -> Router {
                 .allow_origin(Any)
                 .allow_methods(Any)
                 .allow_headers(Any),
-        )
-        .route_layer(middleware::from_fn(track_metrics));
+        );
 
     let ws_state = Arc::new(WSState::new(RedisStore::default()));
 
@@ -263,7 +196,7 @@ fn web_server() -> Router {
 
     let app = Router::new()
         .route("/ping", any(ping))
-        .route("/json", any(json_test))
+        .route("/ping_json", any(ping_json))
         .nest("/:version", api_routes)
         .merge(ws_routes)
         .merge(SwaggerUi::new("/swagger-ui").url("/api-docs/openapi.json", ApiDoc::openapi()))
@@ -280,7 +213,7 @@ async fn ping() -> &'static str {
 }
 
 #[instrument]
-async fn json_test(Json(data): Json<serde_json::Value>) -> Result<Json<serde_json::Value>, ()> {
+async fn ping_json(Json(data): Json<serde_json::Value>) -> Result<Json<serde_json::Value>, ()> {
     Ok(Json(serde_json::json!({ "data": data })))
 }
 

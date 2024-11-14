@@ -1,6 +1,6 @@
 #![allow(unused)]
-use evolve_error::{AppError, AppResult};
 use chrono::{DateTime, FixedOffset, Local, LocalResult, NaiveDateTime, TimeZone, Utc};
+use evolve_error::{AppError, AppResult};
 
 pub trait FormatDateTime {
     fn to_rfc3339(&self) -> String;
@@ -113,6 +113,7 @@ where
 #[cfg(test)]
 mod tests {
     use super::*;
+
     #[test]
     fn test_default_to_local() {
         let str = "2023-09-01 12:00:00";

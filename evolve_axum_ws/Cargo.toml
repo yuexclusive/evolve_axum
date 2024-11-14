@@ -1,5 +1,5 @@
 [package]
-name = "evolve_ws"
+name = "evolve_axum_ws"
 version = "0.1.0"
 edition = "2021"
 

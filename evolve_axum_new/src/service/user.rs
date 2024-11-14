@@ -280,7 +280,7 @@ pub async fn send_email_code(email: &str, from: &user_model::SendEmailCodeFrom) 
 
     let (cache_code_res, send_code_res) = tokio::join!(
         redis_user_dao::set_email_code(email, from, code.to_string(), expired_seconds),
-        crate::email::send(email, "validation code", &body)
+        evolve_mailer::send(email, "validation code", &body)
     );
     let _ = cache_code_res?;
     let _ = send_code_res?;

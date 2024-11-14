@@ -34,9 +34,10 @@ pub static KEYS: Lazy<Keys> = Lazy::new(|| Keys {
     clear_sessions_sha_key: "CLEAR_SESSIONS_SHA_KEY",
     redis_force_refresh_script_sha: match dotenv::var("REDIS_FORCE_REFRESH_SCRIPT_SHA") {
         Ok(v) => v == "true",
-        Err(_) => false,
+        Err(_) => true,
     },
-    service_id: uuid::Uuid::new_v4().to_string(),
+    // service_id: "uuid::Uuid::new_v4().to_string()",
+    service_id: "MY_SERVICE_ID".to_string(),
 });
 
 pub fn get_rooms_change_sha<'a>() -> AppResult<&'a str> {

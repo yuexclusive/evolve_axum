@@ -20,8 +20,6 @@ use super::{
     REDIS_WS_CHANNEL,
 };
 
-use crate::api::auth::Claims;
-
 use evolve_error::AppResult;
 
 use super::Store;
@@ -45,16 +43,12 @@ where
 pub async fn websocket_handler<T>(
     ws: WebSocketUpgrade,
     State(state): State<Arc<WSState<T>>>,
-    claims: Option<Claims>,
 ) -> impl IntoResponse
 where
     T: Store + Sync + Send + 'static,
 {
-    let (uid, uname) = claims.map(|x| (x.sub.clone(), x.sub)).unwrap_or_else(|| {
-        let name = format!("tourist_{}", rand::thread_rng().gen_range(10000..99999));
-        let uid = uuid::Uuid::new_v4().to_string();
-        (uid, name)
-    });
+    let uid = uuid::Uuid::new_v4().to_string();
+    let uname = format!("tourist_{}", rand::thread_rng().gen_range(10000..99999));
     ws.on_upgrade(move |socket| websocket(socket, state, uid, uname))
 }
 
@@ -150,12 +144,6 @@ where
     Ok(tokio::spawn(async move {
         while let Some(msg) = stream.next().await {
             let content = msg.get_payload::<BoradCastContent>().unwrap();
-            if content.ty == BroadCastType::Message {
-                state
-                    .store
-                    .update_room_order(&current_uid_for_send, content.rooms.first().unwrap())
-                    .unwrap();
-            }
 
             let rooms = state.store.rooms(&current_uid_for_send, 1, 1000).unwrap();
             if rooms
@@ -163,6 +151,13 @@ where
                 .into_iter()
                 .any(|x| content.rooms.contains(&x))
             {
+                if content.ty == BroadCastType::Message {
+                    state
+                        .store
+                        .update_room_order(&current_uid_for_send, content.rooms.first().unwrap())
+                        .unwrap();
+                }
+
                 let message = match content.ty {
                     BroadCastType::Join => Message::Text(format!(
                         "join_room:{}",

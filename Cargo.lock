@@ -778,29 +778,23 @@ dependencies = [
  "chrono",
  "dotenv",
  "evolve_axum_dao",
+ "evolve_axum_ws",
  "evolve_datetime",
  "evolve_error",
+ "evolve_mailer",
  "evolve_util",
  "fancy-regex",
  "futures",
  "http-body-util",
  "jsonwebtoken 9.3.0",
- "lazy_static",
- "lettre",
- "metrics",
- "metrics-exporter-prometheus",
  "mime",
  "once_cell",
  "openssl",
  "rand",
- "redis",
- "redis_encoding_derive",
  "serde",
  "serde_json",
  "sha2",
- "thiserror",
  "tokio",
- "tokio-stream",
  "tower 0.4.13",
  "tower-http",
  "tracing",
@@ -812,13 +806,24 @@ dependencies = [
 ]
 
 [[package]]
-name = "evolve_axum_reverse_proxy"
+name = "evolve_axum_ws"
 version = "0.1.0"
 dependencies = [
  "axum",
- "hyper",
- "hyper-util",
+ "dotenv",
+ "evolve_error",
+ "evolve_util",
+ "fancy-regex",
+ "futures",
+ "once_cell",
+ "rand",
+ "redis",
+ "redis_encoding_derive",
+ "serde",
+ "serde_json",
  "tokio",
+ "tracing",
+ "uuid",
 ]
 
 [[package]]
@@ -849,6 +854,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "evolve_mailer"
+version = "0.1.0"
+dependencies = [
+ "lettre",
+ "once_cell",
+ "tracing",
+]
+
+[[package]]
 name = "evolve_util"
 version = "0.1.0"
 dependencies = [
@@ -863,27 +877,6 @@ dependencies = [
  "tokio",
  "tokio-stream",
  "tracing",
-]
-
-[[package]]
-name = "evolve_ws"
-version = "0.1.0"
-dependencies = [
- "axum",
- "dotenv",
- "evolve_error",
- "evolve_util",
- "fancy-regex",
- "futures",
- "once_cell",
- "rand",
- "redis",
- "redis_encoding_derive",
- "serde",
- "serde_json",
- "tokio",
- "tracing",
- "uuid",
 ]
 
 [[package]]

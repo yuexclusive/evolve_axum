@@ -1,3 +1,4 @@
+#![allow(static_mut_refs)]
 use lettre::transport::smtp::authentication::Credentials;
 use lettre::{
     transport::smtp::{response::Response, Error},
@@ -41,7 +42,7 @@ pub async fn init(from: &str, pwd: &str, relay: &str, port: u16) {
     }
 }
 
-pub fn mailer() -> &'static SmtpTransport {
+fn mailer() -> &'static SmtpTransport {
     MAILER.get_or_init(|| {
         let cfg = unsafe { CONFIG.get_unchecked() };
         let creds = Credentials::new(cfg.from.clone(), cfg.pwd.clone());
