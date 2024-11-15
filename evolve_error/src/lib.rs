@@ -63,6 +63,21 @@ pub enum AppError {
 
     #[error(transparent)]
     Regex(#[from] fancy_regex::Error),
+
+    #[error(transparent)]
+    SerdeUrlEncodeError(#[from] serde_urlencoded::ser::Error),
+
+    #[error(transparent)]
+    SerdeJsonError(#[from] serde_json::Error),
+
+    #[error(transparent)]
+    ReqwestError(#[from] reqwest::Error),
+
+    #[error(transparent)]
+    UrlParseError(#[from] url::ParseError),
+
+    #[error(transparent)]
+    InvalidHeaderValue(#[from] http::header::InvalidHeaderValue),
 }
 
 impl<T> From<AppError> for AppResult<T> {
@@ -157,6 +172,10 @@ impl IntoResponse for AppError {
             AppError::Regex(err) => (
                 StatusCode::INTERNAL_SERVER_ERROR,
                 ErrorResp::new(500100009, &err.to_string()),
+            ),
+            _x => (
+                StatusCode::INTERNAL_SERVER_ERROR,
+                ErrorResp::new(500999999, _x.to_string().as_str()),
             ),
         };
 

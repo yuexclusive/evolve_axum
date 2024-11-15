@@ -747,13 +747,18 @@ dependencies = [
  "axum-extra",
  "chrono",
  "fancy-regex",
+ "http",
  "jsonwebtoken",
  "lettre",
  "meilisearch-sdk",
  "redis",
+ "reqwest",
  "serde",
+ "serde_json",
+ "serde_urlencoded",
  "sqlx",
  "thiserror 1.0.69",
+ "url",
  "utoipa",
 ]
 
