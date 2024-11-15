@@ -81,7 +81,7 @@ fn impl_from_redis_value(ast: &mut syn::DeriveInput) -> TokenStream {
         impl redis::FromRedisValue for #name {
             fn from_redis_value(v: &redis::Value) -> redis::RedisResult<Self> {
                 match v {
-                    redis::Value::Data(bs)=>{
+                    redis::Value::BulkString(bs)=>{
                         let res = serde_json::from_slice::<Self>(bs).unwrap();
                         return Ok(res);
                     }

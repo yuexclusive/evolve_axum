@@ -36,7 +36,7 @@ utoipa-swagger-ui = { git = "https://github.com/juhaku/utoipa.git", branch = "ma
 futures = "0.3.30"
 rand = "0.8.5"
 base64 = "0.22.1"
-fancy-regex = "0.13.0"
+fancy-regex = "0.14.0"
 sha2 = "0.10.8"
 uuid = "1.9.1"
 # lettre = "0.11.7"
@@ -48,6 +48,8 @@ evolve_error = { path = "../evolve_error" }
 evolve_axum_dao = { path = "../evolve_axum_dao" }
 evolve_axum_ws = { path = "../evolve_axum_ws" }
 evolve_mailer = { path = "../evolve_mailer" }
+
+meilisearch-sdk = "0"
 
 [dev-dependencies]
 http-body-util = "0.1.0"

@@ -9,7 +9,7 @@ pub const USER_LIST_INDEX: &str = "user_list";
 
 pub async fn reload<D>(index: &str, documents: &[D], primary_key: Option<&str>) -> AppResult<()>
 where
-    D: Serialize,
+    D: Serialize + Send + Sync,
 {
     meilisearch_util::client()
         .index(index)
@@ -33,7 +33,7 @@ where
 
 pub async fn update<D>(index: &str, documents: &[D], primary_key: Option<&str>) -> AppResult<()>
 where
-    D: Serialize,
+    D: Serialize + Send + Sync,
 {
     meilisearch_util::client()
         .index(index)
@@ -46,7 +46,7 @@ where
 
 pub async fn delete<T>(index: &str, ids: &[T]) -> AppResult<()>
 where
-    T: Display + Serialize + std::fmt::Debug,
+    T: Display + Serialize + std::fmt::Debug + Send + Sync,
 {
     meilisearch_util::client()
         .index(index)

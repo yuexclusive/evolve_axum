@@ -1,4 +1,5 @@
 use meilisearch_sdk::client::Client;
+use meilisearch_sdk::errors::Error;
 pub use meilisearch_sdk::settings::Settings;
 use once_cell::sync::OnceCell;
 
@@ -10,7 +11,6 @@ struct Config {
 
 static mut CONFIG: OnceCell<Config> = OnceCell::new();
 static CLIENT: OnceCell<Client> = OnceCell::new();
-
 
 pub async fn init(address: &str, api_key: &str) {
     unsafe {
@@ -33,6 +33,8 @@ pub async fn init(address: &str, api_key: &str) {
 pub fn client() -> &'static Client {
     CLIENT.get_or_init(|| {
         let cfg = unsafe { CONFIG.get_unchecked() };
-        Client::new(cfg.address.clone(), cfg.api_key.clone())
+        Client::new(cfg.address.clone(), Some(cfg.api_key.clone()))
+            .unwrap()
+            .clone()
     })
 }

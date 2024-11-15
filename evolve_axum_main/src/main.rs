@@ -1,5 +1,3 @@
-// #![allow(unused)]
-#![allow(static_mut_refs)]
 mod api;
 mod api_doc;
 // mod dao;

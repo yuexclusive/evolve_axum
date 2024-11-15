@@ -1,7 +1,6 @@
-use evolve_error::AppResult;
 use crate::model::user as user_model;
-use evolve_util::redis_util;
-use redis::AsyncCommands;
+use evolve_error::AppResult;
+use evolve_util::redis_util::{self, redis::AsyncCommands};
 
 fn email_code_key(email: &str, from: &user_model::SendEmailCodeFrom) -> String {
     format!("{email}_mail_{:?}", from)

@@ -58,7 +58,7 @@ pub async fn init(
     }
 
     match ping().await {
-        Ok(redis::Value::Status(ref v)) => {
+        Ok(redis::Value::SimpleString(ref v)) => {
             if v == "PONG" {
                 tracing::info!("redis init success");
             } else {
@@ -74,7 +74,7 @@ pub async fn init(
     }
 
     match sync::ping() {
-        Ok(redis::Value::Status(ref v)) => {
+        Ok(redis::Value::SimpleString(ref v)) => {
             if v == "PONG" {
                 tracing::info!("redis init success");
             } else {

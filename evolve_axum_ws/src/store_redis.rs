@@ -2,14 +2,14 @@ use crate::lua_script;
 use crate::lua_script::RoomChangeForResponse;
 use evolve_error::{AppError, AppResult};
 use evolve_util::redis_util;
+use evolve_util::redis_util::redis::Commands;
+use evolve_util::redis_util::redis::ConnectionLike;
 
 use super::Store;
 use super::DEFAULT_ROOM;
-use redis::ConnectionLike;
 use serde::{Deserialize, Serialize};
 
 use crate::lua_script::KEYS;
-use redis::Commands;
 use redis::FromRedisValue;
 use redis_encoding_derive::{from_redis, to_redis};
 
