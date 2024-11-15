@@ -1,13 +1,13 @@
 [workspace]
 resolver = "1"
 members = [
-    "evolve_axum",
-    "evolve_axum_new",
+    "evolve_axum_main",
     "evolve_axum_cli",
     "evolve_axum_dao",
     "redis_encoding_derive",
     "evolve_error",
     "evolve_util",
     "evolve_datetime",
-    "evolve_axum_ws", "evolve_mailer",
+    "evolve_axum_ws",
+    "evolve_mailer",
 ]
