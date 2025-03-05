@@ -214,7 +214,7 @@ pub struct UserGetResp {
         ("Authorization" = [])
     )
 )]
-pub async fn get(Path(id): Path<i64>) -> Result<Json<UserGetResp>, AppError> {
+pub async fn get(Path((_version, id)): Path<(String, i64)>) -> Result<Json<UserGetResp>, AppError> {
     let res = user_service::get(id).await?;
     Ok(Json(UserGetResp { data: res }))
 }
