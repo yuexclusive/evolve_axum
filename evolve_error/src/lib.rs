@@ -37,7 +37,7 @@ pub enum AppError {
     #[error("validate error: {}",.msg)]
     Validate { msg: String },
 
-    #[error("hit: {}",.msg)]
+    #[error("hint: {}",.msg)]
     Hint { msg: String },
 
     #[error(transparent)]

@@ -8,9 +8,9 @@
             "type": "lldb",
             "request": "launch",
             "name": "Debug",
-            "program": "${workspaceFolder}/target/debug/evolve_axum",
+            "program": "${workspaceFolder}/target/debug/evolve_axum_main",
             "args": [],
-            "cwd": "${workspaceFolder}",
+            "cwd": "${workspaceFolder}/evolve_axum_main",
             "preLaunchTask": "rust: cargo build"
         }
     ]
