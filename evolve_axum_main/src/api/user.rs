@@ -181,10 +181,10 @@ pub struct SearchReq {
     )
 )]
 pub async fn search(
-    // _claims: Claims,
+    _claims: Claims,
+    Query(_p): Query<Paging>,
     paging: Paging,
     Query(req): Query<SearchReq>,
-    Query(_p): Query<Paging>,
 ) -> Result<Json<UserSearchResp>, AppError> {
     let (data, total) = user_service::search(
         &req.key_word.unwrap_or_default(),
