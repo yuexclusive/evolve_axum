@@ -28,14 +28,14 @@ impl Display for AuthError {
 
 #[derive(Debug, Error)]
 pub enum AppError {
-    #[error(transparent)]
-    Wps(#[from] ErrorResp),
-
     #[error("internal error: {}",.msg)]
     Internal { msg: String },
 
     #[error("validate error: {}",.msg)]
     Validate { msg: String },
+
+    #[error("resource can not found: {}",.msg)]
+    NotFound { msg: String },
 
     #[error("hint: {}",.msg)]
     Hint { msg: String },
@@ -128,22 +128,28 @@ impl IntoResponse for ErrorResp {
 // This is also a convenient place to log errors.
 impl IntoResponse for AppError {
     fn into_response(self) -> Response {
-        let (status, err_response) = match self {
-            AppError::Wps(err_resp) => (StatusCode::INTERNAL_SERVER_ERROR, err_resp),
-
-            AppError::Internal { msg } => (
+        let tuple = match self {
+            AppError::Internal { msg: _ } => (
                 StatusCode::INTERNAL_SERVER_ERROR,
-                ErrorResp::new(500100000, &msg, None),
+                ErrorResp::new(500100000, &self.to_string(), None),
             ),
 
-            AppError::Validate { msg } => (
+            AppError::Validate { msg: _ } => (
                 StatusCode::BAD_REQUEST,
-                ErrorResp::new(400100000, &msg, None),
+                ErrorResp::new(400100000, &self.to_string(), None),
             ),
 
-            AppError::Hint { msg } => (
+            AppError::NotFound { msg: _ } => {
+                let res = (
+                    StatusCode::BAD_REQUEST,
+                    ErrorResp::new(40010001, &self.to_string(), None),
+                );
+                res
+            }
+
+            AppError::Hint { msg: _ } => (
                 StatusCode::from_u16(452).unwrap(),
-                ErrorResp::new(452100000, &msg, None),
+                ErrorResp::new(452100000, &self.to_string(), None),
             ),
 
             AppError::Auth(err) => match err {
@@ -198,6 +204,6 @@ impl IntoResponse for AppError {
             ),
         };
 
-        (status, err_response).into_response()
+        tuple.into_response()
     }
 }

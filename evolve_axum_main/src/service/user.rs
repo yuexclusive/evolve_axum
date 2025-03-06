@@ -181,8 +181,11 @@ pub async fn search(
 }
 
 pub async fn get(id: i64) -> AppResult<user_model::User> {
-    let res = pg_user_dao::get(id).await?.into();
-    Ok(res)
+    let res = pg_user_dao::get(id).await?;
+    let user = res.ok_or(AppError::NotFound {
+        msg: format!("There is no user whose ID is equal to {}", id),
+    })?;
+    Ok(user.into())
 }
 
 pub async fn get_all() -> AppResult<Vec<user_model::User>> {

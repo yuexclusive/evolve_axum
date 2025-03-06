@@ -1,8 +1,8 @@
-use evolve_datetime::FormatDateTime;
-use evolve_error::{AppError, AppResult};
 use crate::model::user::{self as user_model, UserStatus, UserType};
 use crate::Pagination;
 use chrono::{DateTime, Utc};
+use evolve_datetime::FormatDateTime;
+use evolve_error::{AppError, AppResult};
 
 use evolve_util::postgres_util::{conn, SqlResult};
 
@@ -110,7 +110,7 @@ order by u.created_at desc
     .await
 }
 
-pub async fn get(id: i64) -> SqlResult<User> {
+pub async fn get(id: i64) -> SqlResult<Option<User>> {
     sqlx::query_as!(
         User,
         r#"
@@ -128,11 +128,11 @@ select
     updated_at,
     deleted_at
 from "user" 
-where id = $1
+where id = $1 and deleted_at is null
             "#,
         id,
     )
-    .fetch_one(conn().await)
+    .fetch_optional(conn().await)
     .await
 }
 

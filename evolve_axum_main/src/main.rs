@@ -80,14 +80,14 @@ async fn main() -> Result<(), Box<dyn Error>> {
     // load user search data
     user_service::load_search().await?;
 
-    // // init mail
-    // evolve_mailer::init(
-    //     &ENV.email_username,
-    //     &ENV.email_password,
-    //     &ENV.email_relay,
-    //     ENV.email_port,
-    // )
-    // .await;
+    // init mail
+    evolve_mailer::init(
+        &ENV.email_username,
+        &ENV.email_password,
+        &ENV.email_relay,
+        ENV.email_port,
+    )
+    .await;
 
     // start servers
     tokio::join!(
