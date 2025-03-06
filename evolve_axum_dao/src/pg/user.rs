@@ -1,5 +1,5 @@
 use crate::model::user::{self as user_model, UserStatus, UserType};
-use crate::Pagination;
+use crate::Paging;
 use chrono::{DateTime, Utc};
 use evolve_datetime::FormatDateTime;
 use evolve_error::{AppError, AppResult};
@@ -55,7 +55,7 @@ where u.deleted_at is null
 }
 
 #[allow(unused)]
-pub async fn query(p: &Pagination) -> SqlResult<Vec<User>> {
+pub async fn query(p: &Paging) -> SqlResult<Vec<User>> {
     sqlx::query_as!(
         User,
         r#"
@@ -212,17 +212,21 @@ deleted_at
     Ok(res)
 }
 
-pub async fn delete(ids: &[i64]) -> SqlResult<u64> {
+pub struct UserDeleteResult {
+    pub id: i64,
+}
+
+pub async fn delete(ids: &[i64]) -> SqlResult<Vec<UserDeleteResult>> {
     let deleted_at = chrono::Local::now();
-    let res = sqlx::query!(
-        r#"update "user" set deleted_at = $1 where id = ANY($2)"#,
+    let res = sqlx::query_as!(UserDeleteResult,
+        r#"update "user" set deleted_at = $1 where id = ANY($2) and deleted_at is null RETURNING id"#,
         deleted_at,
         ids,
     )
-    .execute(conn().await)
+    .fetch_all(conn().await)
     .await?;
 
-    Ok(res.rows_affected())
+    Ok(res)
 }
 
 pub async fn update(id: i64, name: Option<&str>, mobile: Option<&str>) -> SqlResult<User> {

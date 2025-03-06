@@ -1,8 +1,9 @@
 pub mod auth;
 pub mod user;
 pub mod version;
-use serde::{Deserialize, Serialize};
-use utoipa::{IntoParams, ToSchema};
+use serde::Serialize;
+use utoipa::ToSchema;
+pub mod paging;
 
 #[derive(Serialize, ToSchema)]
 #[serde(rename_all = "snake_case")]
@@ -19,10 +20,10 @@ where
     }
 }
 
-#[derive(Deserialize, IntoParams)]
-pub struct Pagination {
-    #[param(example = 1)]
-    pub index: i64,
-    #[param(example = 20)]
-    pub size: i64,
-}
+// #[derive(Deserialize, IntoParams)]
+// pub struct Pagination {
+//     #[param(example = 1)]
+//     pub page_index: i64,
+//     #[param(example = 20)]
+//     pub page_size: i64,
+// }

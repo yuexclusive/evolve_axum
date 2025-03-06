@@ -1,6 +1,6 @@
 use super::msg;
+use super::paging::Paging;
 use super::MsgResp;
-use super::Pagination;
 use crate::api::auth::Claims;
 use crate::service::user as user_service;
 use axum::{
@@ -163,11 +163,12 @@ pub struct UserSearchResp {
 pub struct SearchReq {
     key_word: Option<String>,
 }
+
 #[utoipa::path(
     get,
     path = "/search",
     params(
-        SearchReq, Pagination
+        SearchReq,Paging,
     ),
     responses(
         (status = 200, description = "successfully", body = UserSearchResp),
@@ -180,15 +181,16 @@ pub struct SearchReq {
     )
 )]
 pub async fn search(
+    // _claims: Claims,
+    paging: Paging,
     Query(req): Query<SearchReq>,
-    Query(page): Query<Pagination>,
-    _claims: Claims,
+    Query(_p): Query<Paging>,
 ) -> Result<Json<UserSearchResp>, AppError> {
     let (data, total) = user_service::search(
         &req.key_word.unwrap_or_default(),
-        &evolve_axum_dao::Pagination {
-            index: page.index,
-            size: page.size,
+        &evolve_axum_dao::Paging {
+            page_index: paging.page_index,
+            page_size: paging.page_size,
         },
     )
     .await?;
@@ -289,7 +291,7 @@ pub async fn delete(Json(req): Json<UserDeleteReq>) -> Result<Json<MsgResp>, App
         UserUpdateResp,
         SearchedUser,
         User,
-        UserFormatter
+        UserFormatter,
     ))
 )]
 pub struct UserApi;

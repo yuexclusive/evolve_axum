@@ -1,3 +1,5 @@
+use std::collections::HashSet;
+
 use evolve_axum_dao::{
     meilisearch::{self as meilisearch_dao, user as meilisearch_user_dao},
     model::user as user_model,
@@ -175,7 +177,7 @@ mod private {
 
 pub async fn search(
     key_word: &str,
-    page: &evolve_axum_dao::Pagination,
+    page: &evolve_axum_dao::Paging,
 ) -> AppResult<(Vec<user_model::SearchedUser>, usize)> {
     meilisearch_user_dao::search(key_word, page).await
 }
@@ -183,7 +185,7 @@ pub async fn search(
 pub async fn get(id: i64) -> AppResult<user_model::User> {
     let res = pg_user_dao::get(id).await?;
     let user = res.ok_or(AppError::NotFound {
-        msg: format!("There is no user whose ID is equal to {}", id),
+        msg: format!("user with id {} cannot be found", id),
     })?;
     Ok(user.into())
 }
@@ -242,12 +244,21 @@ pub async fn validate_exist_email(email: &str) -> AppResult<user_model::User> {
     Ok(private::validate_exist_email(email).await?.into())
 }
 
-pub async fn delete(ids: &[i64]) -> AppResult<u64> {
+pub async fn delete(ids: &[i64]) -> AppResult<Vec<i64>> {
     let (pg_del_res, _) = tokio::try_join!(
         pg_user_dao::delete(ids).map_err(|err| err.into()),
         meilisearch_dao::delete(meilisearch_dao::USER_LIST_INDEX, ids)
     )?;
-    Ok(pg_del_res)
+    let in_hs = ids.iter().map(|x| *x).collect::<HashSet<i64>>();
+    let out_hs = pg_del_res.iter().map(|x| x.id).collect::<HashSet<i64>>();
+    let diff = in_hs.difference(&out_hs).map(|x| *x).collect::<Vec<i64>>();
+    if !diff.is_empty() {
+        return AppError::NotFound {
+            msg: format!("some users with ids {:?} cannot be deleted", diff),
+        }
+        .into();
+    }
+    Ok(out_hs.iter().map(|x| *x).collect())
 }
 
 pub async fn change_pwd(email: &str, code: &str, new_pwd: &str) -> AppResult<u64> {

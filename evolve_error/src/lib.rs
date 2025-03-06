@@ -34,7 +34,7 @@ pub enum AppError {
     #[error("validate error: {}",.msg)]
     Validate { msg: String },
 
-    #[error("resource can not found: {}",.msg)]
+    #[error("the resource cannot be found: {}",.msg)]
     NotFound { msg: String },
 
     #[error("hint: {}",.msg)]

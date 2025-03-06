@@ -8,7 +8,7 @@ use axum::{
 use serde::Serialize;
 use std::collections::HashMap;
 
-#[derive(Debug,Serialize)]
+#[derive(Debug, Serialize)]
 pub enum Version {
     V1,
     V2,

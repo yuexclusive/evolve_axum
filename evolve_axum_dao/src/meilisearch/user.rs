@@ -1,11 +1,11 @@
 use crate::model::user as user_model;
-use crate::Pagination;
+use crate::Paging;
 use evolve_error::AppResult;
 use meilisearch_sdk::search::Selectors;
 
 pub async fn search(
     key_word: &str,
-    page: &Pagination,
+    page: &Paging,
 ) -> AppResult<(Vec<user_model::SearchedUser>, usize)> {
     let res = evolve_util::meilisearch_util::client()
         .get_index(super::USER_LIST_INDEX)
