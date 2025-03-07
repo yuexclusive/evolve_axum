@@ -252,11 +252,19 @@ pub async fn delete(ids: &[i64]) -> AppResult<Vec<i64>> {
     let in_hs = ids.iter().map(|x| *x).collect::<HashSet<i64>>();
     let out_hs = pg_del_res.iter().map(|x| x.id).collect::<HashSet<i64>>();
     let diff = in_hs.difference(&out_hs).map(|x| *x).collect::<Vec<i64>>();
+    let intersection = in_hs
+        .intersection(&out_hs)
+        .map(|x| *x)
+        .collect::<Vec<i64>>();
     if !diff.is_empty() {
-        return AppError::NotFound {
-            msg: format!("some users with ids {:?} cannot be deleted", diff),
+        let mut msg = format!("some users with ids {:?} cannot be found or have already been deleted", diff);
+        if !intersection.is_empty() {
+            msg = format!(
+                "users with ids {:?} have already been deleted; but {}",
+                intersection, msg
+            );
         }
-        .into();
+        return AppError::NotFound { msg }.into();
     }
     Ok(out_hs.iter().map(|x| *x).collect())
 }

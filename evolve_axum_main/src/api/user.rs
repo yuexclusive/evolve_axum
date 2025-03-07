@@ -168,12 +168,13 @@ pub struct SearchReq {
     get,
     path = "/search",
     params(
+        // ("x-custom-header" = String, Header, description = "Custom header"),
         SearchReq,Paging,
     ),
     responses(
         (status = 200, description = "successfully", body = UserSearchResp),
         (status = 400, description = "bad request", body = ErrorResp),
-        (status = 401, description = "unthorized", body = ErrorResp),
+        (status = 401, description = "unauthorized", body = ErrorResp),
         (status = 500, description = "internal server error", body = ErrorResp)
     ),
     security(
@@ -182,8 +183,8 @@ pub struct SearchReq {
 )]
 pub async fn search(
     _claims: Claims,
-    Query(_p): Query<Paging>,
-    paging: Paging,
+    _p: Paging,
+    Query(paging): Query<Paging>,
     Query(req): Query<SearchReq>,
 ) -> Result<Json<UserSearchResp>, AppError> {
     let (data, total) = user_service::search(

@@ -19,11 +19,3 @@ where
         msg: msg.as_ref().to_string(),
     }
 }
-
-// #[derive(Deserialize, IntoParams)]
-// pub struct Pagination {
-//     #[param(example = 1)]
-//     pub page_index: i64,
-//     #[param(example = 20)]
-//     pub page_size: i64,
-// }
