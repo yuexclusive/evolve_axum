@@ -1,5 +1,4 @@
 use axum::{
-    async_trait,
     extract::{FromRequestParts, Query},
     http::request::Parts,
     response::{IntoResponse, Response},
@@ -49,7 +48,6 @@ fn validate_page_size(page_size: &str) -> Result<i64, AppError> {
     Ok(page_size)
 }
 
-#[async_trait]
 impl<S> FromRequestParts<S> for Paging
 where
     S: Send + Sync,

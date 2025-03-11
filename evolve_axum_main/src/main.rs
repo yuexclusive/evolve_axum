@@ -167,15 +167,15 @@ fn web_server() -> Router {
         .route("/user/change_pwd", post(api_user::change_pwd))
         .route("/user/register", post(api_user::register))
         .route(
-            "/user/validate_exist_email/:email",
+            "/user/validate_exist_email/{email}",
             get(api_user::validate_exist_email),
         )
         .route(
-            "/user/validate_not_exist_email/:email",
+            "/user/validate_not_exist_email/{email}",
             get(api_user::validate_not_exist_email),
         )
         .route("/user/search", get(api_user::search))
-        .route("/user/:id", get(api_user::get))
+        .route("/user/{id}", get(api_user::get))
         .route("/user/update", put(api_user::update))
         .route("/user/delete", delete(api_user::delete))
         .layer(
@@ -195,7 +195,7 @@ fn web_server() -> Router {
     let app = Router::new()
         .route("/ping", any(ping))
         .route("/ping_json", any(ping_json))
-        .nest("/:version", api_routes)
+        .nest("/{version}", api_routes)
         .merge(ws_routes)
         .merge(SwaggerUi::new("/swagger-ui").url("/api-docs/openapi.json", ApiDoc::openapi()))
         // .merge(Redoc::with_url("/redoc", ApiDoc::openapi()))

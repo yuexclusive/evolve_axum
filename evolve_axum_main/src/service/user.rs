@@ -257,7 +257,10 @@ pub async fn delete(ids: &[i64]) -> AppResult<Vec<i64>> {
         .map(|x| *x)
         .collect::<Vec<i64>>();
     if !diff.is_empty() {
-        let mut msg = format!("some users with ids {:?} cannot be found or have already been deleted", diff);
+        let mut msg = format!(
+            "some users with ids {:?} cannot be found or have already been deleted",
+            diff
+        );
         if !intersection.is_empty() {
             msg = format!(
                 "users with ids {:?} have already been deleted; but {}",
@@ -294,7 +297,7 @@ pub async fn send_email_code(email: &str, from: &user_model::SendEmailCodeFrom) 
         return AppError::Hint{msg:"the validation code has already send to your mail box, please check or resend after a few minutes".to_string()}.into();
     }
 
-    let code = rand::thread_rng().gen_range(100000..999999);
+    let code = rand::rng().random_range(100000..999999);
 
     let expired_seconds = 120;
 

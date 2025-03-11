@@ -1,5 +1,4 @@
 use axum::{
-    async_trait,
     extract::{FromRequestParts, Json},
     http::request::Parts,
     RequestPartsExt,
@@ -17,9 +16,9 @@ use serde::{Deserialize, Serialize};
 use utoipa::{OpenApi, ToSchema};
 
 use crate::env::ENV;
+use crate::service::user as user_service;
 use evolve_axum_dao::model::user::CurrentUser;
 use evolve_axum_dao::model::user::{UserStatus, UserType};
-use crate::service::user as user_service;
 use evolve_error::{AppError, AuthError, ErrorResp};
 
 struct Keys {
@@ -168,7 +167,6 @@ pub async fn user_info(claims: Claims) -> Result<Json<UserInfoResp>, AppError> {
     }
 }
 
-#[async_trait]
 impl<S> FromRequestParts<S> for Claims
 where
     S: Send + Sync,

@@ -48,7 +48,7 @@ where
     T: Store + Sync + Send + 'static,
 {
     let uid = uuid::Uuid::new_v4().to_string();
-    let uname = format!("tourist_{}", rand::thread_rng().gen_range(10000..99999));
+    let uname = format!("tourist_{}", rand::rng().random_range(10000..99999));
     ws.on_upgrade(move |socket| websocket(socket, state, uid, uname))
 }
 
@@ -129,7 +129,6 @@ where
     state.store.quit(&current_uid, None).unwrap();
 }
 
-
 pub async fn handle_msg_from_hub<T>(
     state: Arc<WSState<T>>,
     current_uid_for_send: String,
@@ -163,19 +162,19 @@ where
                     BroadCastType::Join => Message::Text(format!(
                         "join_room:{}",
                         serde_json::json!({"room": &content.rooms.first(),"rooms":rooms,"uname":content.from_uname,"from_self": current_uid_for_send == content.from_uid})
-                    )),
+                    ).into()),
                     BroadCastType::Quit => Message::Text(format!(
                         "quit_room:{}",
                         serde_json::json!({"room": &content.rooms.first(),"uname":content.from_uname})
-                    )),
+                    ).into()),
                     BroadCastType::ReName => Message::Text(format!(
                         "update_uname:{}",
                         serde_json::json!({"room":&content.rooms.first(),"old_uname":content.msg.unwrap_or_default(),"uname":content.from_uname})
-                    )),
+                    ).into()),
                     BroadCastType::Message => Message::Text(format!(
                         "message:{}",
                         serde_json::json!({"room":&content.rooms.first(), "rooms": rooms,"from_uname":content.from_uname,"content":content.msg})
-                    )),
+                    ).into()),
                 };
                 tx_websocket.lock().await.send(message).await.unwrap();
             }
@@ -349,13 +348,13 @@ where
                             .await
                             .send(Message::Text(match content.ty {
                                 ReplyType::List => {
-                                    format!("list:{}", &content.msg.unwrap_or_default())
+                                    format!("list:{}", &content.msg.unwrap_or_default()).into()
                                 }
                                 ReplyType::Notify => {
-                                    format!("notify:{}", content.msg.unwrap_or_default())
+                                    format!("notify:{}", content.msg.unwrap_or_default()).into()
                                 }
                                 ReplyType::Rooms => {
-                                    format!("rooms:{}", content.msg.unwrap_or_default())
+                                    format!("rooms:{}", content.msg.unwrap_or_default()).into()
                                 }
                             }))
                             .await;
