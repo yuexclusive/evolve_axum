@@ -1,8 +1,8 @@
+use crate::paging::Paging;
 use chrono::{FixedOffset, TimeZone};
 pub use entity::user::Model as User;
 use evolve_datetime::FormatDateTime;
 use evolve_error::AppResult;
-use evolve_util::seaorm_util::{self, Paging};
 use sea_orm::{
     ActiveModelTrait,
     ActiveValue::{self, Set},
@@ -12,13 +12,13 @@ use sea_orm::{
 
 use crate::{
     model::user as user_model,
-    pg_seaorm::entity::sea_orm_active_enums::{Userstatus, Usertype},
+    pg::entity::sea_orm_active_enums::{Userstatus, Usertype},
 };
 
 use super::entity;
 
 pub async fn count() -> AppResult<u64> {
-    let conn = seaorm_util::conn().await;
+    let conn = evolve_seaorm::conn().await;
 
     let res = entity::user::Entity::find()
         .filter(entity::user::Column::DeletedAt.is_null())
@@ -29,7 +29,7 @@ pub async fn count() -> AppResult<u64> {
 }
 
 pub async fn query(p: &Paging) -> AppResult<Vec<User>> {
-    let conn = seaorm_util::conn().await;
+    let conn = evolve_seaorm::conn().await;
 
     let res = entity::user::Entity::find()
         .filter(Condition::all().add(entity::user::Column::DeletedAt.is_null()))
@@ -43,7 +43,7 @@ pub async fn query(p: &Paging) -> AppResult<Vec<User>> {
 }
 
 pub async fn get_all() -> AppResult<Vec<User>> {
-    let conn = seaorm_util::conn().await;
+    let conn = evolve_seaorm::conn().await;
 
     let res = entity::user::Entity::find()
         .filter(Condition::all().add(entity::user::Column::DeletedAt.is_null()))
@@ -55,7 +55,7 @@ pub async fn get_all() -> AppResult<Vec<User>> {
 }
 
 pub async fn get(id: i64) -> AppResult<Option<User>> {
-    let conn = seaorm_util::conn().await;
+    let conn = evolve_seaorm::conn().await;
 
     let res = entity::user::Entity::find()
         .filter(
@@ -71,7 +71,7 @@ pub async fn get(id: i64) -> AppResult<Option<User>> {
 }
 
 pub async fn get_by_email(email: &str) -> AppResult<Option<User>> {
-    let conn = seaorm_util::conn().await;
+    let conn = evolve_seaorm::conn().await;
 
     let res = entity::user::Entity::find()
         .filter(
@@ -109,7 +109,7 @@ pub async fn insert(
         r#type: Set(Usertype::Normal),
         status: Set(Userstatus::Available),
     };
-    let conn = seaorm_util::conn().await;
+    let conn = evolve_seaorm::conn().await;
     let insert_user = user.insert(conn).await?;
 
     let user_model = entity::user::Model::from(insert_user);
@@ -118,7 +118,7 @@ pub async fn insert(
 
 pub async fn delete(ids: &[i64]) -> AppResult<u64> {
     let deleted_at = chrono::Local::now().with_timezone(&FixedOffset::east_opt(8 * 3600).unwrap());
-    let conn = seaorm_util::conn().await;
+    let conn = evolve_seaorm::conn().await;
     let res = entity::user::Entity::update_many()
         .filter(entity::user::Column::Id.is_in(ids.to_owned()))
         .col_expr(entity::user::Column::DeletedAt, deleted_at.into())
@@ -130,7 +130,7 @@ pub async fn delete(ids: &[i64]) -> AppResult<u64> {
 
 pub async fn update(id: i64, name: Option<&str>, mobile: Option<&str>) -> AppResult<User> {
     let updated_at = chrono::Local::now().with_timezone(&FixedOffset::east_opt(8 * 3600).unwrap());
-    
+
     let user = entity::user::ActiveModel {
         id: Set(id), // 不更新id
         email: ActiveValue::NotSet,
@@ -151,7 +151,7 @@ pub async fn update(id: i64, name: Option<&str>, mobile: Option<&str>) -> AppRes
         status: ActiveValue::NotSet,
     };
 
-    let conn = seaorm_util::conn().await;
+    let conn = evolve_seaorm::conn().await;
 
     let res = user.update(conn).await?;
 
@@ -176,7 +176,7 @@ pub async fn update_pwd(id: i64, salt: &str, pwd: &str) -> AppResult<User> {
         status: ActiveValue::NotSet,
     };
 
-    let conn = seaorm_util::conn().await;
+    let conn = evolve_seaorm::conn().await;
 
     let res = user.update(conn).await?;
     Ok(res)
@@ -200,7 +200,7 @@ pub async fn update_laston(id: i64, laston: &chrono::DateTime<chrono::Utc>) -> A
         status: ActiveValue::NotSet,
     };
 
-    let conn = seaorm_util::conn().await;
+    let conn = evolve_seaorm::conn().await;
 
     let res = user.update(conn).await?;
     Ok(res)

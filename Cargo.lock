@@ -769,7 +769,9 @@ dependencies = [
  "dotenv",
  "evolve_datetime",
  "evolve_error",
- "evolve_util",
+ "evolve_meilisearch",
+ "evolve_redis",
+ "evolve_seaorm",
  "meilisearch-sdk",
  "once_cell",
  "redis",
@@ -800,7 +802,9 @@ dependencies = [
  "evolve_datetime",
  "evolve_error",
  "evolve_mailer",
- "evolve_util",
+ "evolve_meilisearch",
+ "evolve_redis",
+ "evolve_seaorm",
  "fancy-regex",
  "futures",
  "http-body-util",
@@ -831,7 +835,7 @@ dependencies = [
  "axum",
  "dotenv",
  "evolve_error",
- "evolve_util",
+ "evolve_redis",
  "fancy-regex",
  "futures",
  "once_cell",
@@ -888,21 +892,36 @@ dependencies = [
 ]
 
 [[package]]
-name = "evolve_util"
+name = "evolve_meilisearch"
+version = "0.1.0"
+dependencies = [
+ "meilisearch-sdk",
+ "once_cell",
+ "tracing",
+]
+
+[[package]]
+name = "evolve_redis"
 version = "0.1.0"
 dependencies = [
  "async_once",
  "dotenv",
- "evolve_error",
- "meilisearch-sdk",
  "once_cell",
  "redis",
  "redis_encoding_derive",
- "sea-orm",
- "serde",
- "sqlx",
  "tokio",
  "tokio-stream",
+ "tracing",
+]
+
+[[package]]
+name = "evolve_seaorm"
+version = "0.1.0"
+dependencies = [
+ "async_once",
+ "dotenv",
+ "once_cell",
+ "sea-orm",
  "tracing",
 ]
 

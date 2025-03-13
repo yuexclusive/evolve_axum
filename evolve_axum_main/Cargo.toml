@@ -42,7 +42,9 @@ uuid = "1"
 # lettre = "0.11.7"
 # 这里是为了解决交叉编译的时候缺少对应操作系统版本的openssl报错的问题
 openssl = { version = "0", features = ["vendored"] }
-evolve_util = { path = "../evolve_util" }
+evolve_meilisearch = { path = "../evolve_meilisearch" }
+evolve_redis = { path = "../evolve_redis" }
+evolve_seaorm = { path = "../evolve_seaorm" }
 evolve_datetime = { path = "../evolve_datetime" }
 evolve_error = { path = "../evolve_error" }
 evolve_axum_dao = { path = "../evolve_axum_dao" }

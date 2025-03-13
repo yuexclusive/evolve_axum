@@ -1,0 +1,9 @@
+[package]
+name = "evolve_meilisearch"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+meilisearch-sdk = "0"
+once_cell = "1"
+tracing = "0"

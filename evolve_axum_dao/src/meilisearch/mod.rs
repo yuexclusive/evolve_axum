@@ -1,7 +1,7 @@
 pub mod user;
 
 use evolve_error::AppResult;
-use evolve_util::meilisearch_util::{self, Settings};
+use evolve_meilisearch::{self, Settings};
 use serde::Serialize;
 use std::fmt::Display;
 
@@ -10,20 +10,20 @@ pub const USER_LIST_INDEX: &str = "user_list";
 pub async fn reload<D>(index: &str, documents: &[D], primary_key: Option<&str>) -> AppResult<()>
 where
     D: Serialize + Send + Sync,
-{
-    meilisearch_util::client()
+{   
+    evolve_meilisearch::client()
         .index(index)
         .delete_all_documents()
         .await?;
 
-    meilisearch_util::client()
+    evolve_meilisearch::client()
         .index(index)
         .add_documents(documents, primary_key)
         .await?
-        .wait_for_completion(meilisearch_util::client(), None, None)
+        .wait_for_completion(evolve_meilisearch::client(), None, None)
         .await?;
 
-    meilisearch_util::client()
+    evolve_meilisearch::client()
         .index(index)
         .set_settings(&Settings::new().with_sortable_attributes(["created_at", "updated_at"]))
         .await?;
@@ -35,11 +35,11 @@ pub async fn update<D>(index: &str, documents: &[D], primary_key: Option<&str>) 
 where
     D: Serialize + Send + Sync,
 {
-    meilisearch_util::client()
+    evolve_meilisearch::client()
         .index(index)
         .add_or_update(documents, primary_key)
         .await?
-        .wait_for_completion(meilisearch_util::client(), None, None)
+        .wait_for_completion(evolve_meilisearch::client(), None, None)
         .await?;
     Ok(())
 }
@@ -48,11 +48,11 @@ pub async fn delete<T>(index: &str, ids: &[T]) -> AppResult<()>
 where
     T: Display + Serialize + std::fmt::Debug + Send + Sync,
 {
-    meilisearch_util::client()
+    evolve_meilisearch::client()
         .index(index)
         .delete_documents(ids)
         .await?
-        .wait_for_completion(meilisearch_util::client(), None, None)
+        .wait_for_completion(evolve_meilisearch::client(), None, None)
         .await?;
 
     Ok(())

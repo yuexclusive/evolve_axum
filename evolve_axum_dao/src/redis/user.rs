@@ -1,6 +1,6 @@
 use crate::model::user as user_model;
 use evolve_error::AppResult;
-use evolve_util::redis_util::{self, redis::AsyncCommands};
+use evolve_redis::{self, redis::AsyncCommands};
 
 fn email_code_key(email: &str, from: &user_model::SendEmailCodeFrom) -> String {
     format!("{email}_mail_{:?}", from)
@@ -10,7 +10,7 @@ pub async fn get_email_code(
     email: &str,
     from: &user_model::SendEmailCodeFrom,
 ) -> AppResult<Option<String>> {
-    let res = redis_util::conn()
+    let res = evolve_redis::conn()
         .await?
         .get(email_code_key(email, from))
         .await?;
@@ -25,7 +25,7 @@ pub async fn set_email_code(
     code: impl Into<String>,
     expired_seconds: u64,
 ) -> AppResult<()> {
-    redis_util::conn()
+    evolve_redis::conn()
         .await?
         .set_ex(email_code_key(email, from), code.into(), expired_seconds)
         .await?;
@@ -36,7 +36,7 @@ pub async fn exist_email_code(
     email: &str,
     from: &user_model::SendEmailCodeFrom,
 ) -> AppResult<bool> {
-    let res = redis_util::conn()
+    let res = evolve_redis::conn()
         .await?
         .exists(email_code_key(email, from))
         .await?;

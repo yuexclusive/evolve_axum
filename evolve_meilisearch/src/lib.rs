@@ -1,5 +1,5 @@
+#![allow(static_mut_refs)]
 use meilisearch_sdk::client::Client;
-use meilisearch_sdk::errors::Error;
 pub use meilisearch_sdk::settings::Settings;
 use once_cell::sync::OnceCell;
 

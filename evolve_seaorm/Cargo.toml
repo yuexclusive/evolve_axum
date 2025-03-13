@@ -1,0 +1,16 @@
+[package]
+name = "evolve_seaorm"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+once_cell = "1"
+async_once = "0"
+tracing = "0"
+dotenv = "0"
+sea-orm = { version = "1", features = [
+    "sqlx-postgres",
+    "runtime-tokio-native-tls",
+    "chrono",
+    "macros",
+] }

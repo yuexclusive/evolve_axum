@@ -53,7 +53,7 @@ where
 }
 
 async fn publish(message: BoradCastContent) -> AppResult<()> {
-    let res = evolve_util::redis_util::publish(REDIS_WS_CHANNEL, message).await?;
+    let res = evolve_redis::publish(REDIS_WS_CHANNEL, message).await?;
     Ok(res)
 }
 
@@ -137,7 +137,7 @@ pub async fn handle_msg_from_hub<T>(
 where
     T: Store + Sync + Send + 'static,
 {
-    let mut pubsub = evolve_util::redis_util::pubsub().await?;
+    let mut pubsub = evolve_redis::pubsub().await?;
     pubsub.subscribe(REDIS_WS_CHANNEL).await?;
 
     let mut stream = pubsub.into_on_message();

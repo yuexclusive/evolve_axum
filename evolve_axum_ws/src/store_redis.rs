@@ -1,9 +1,8 @@
 use crate::lua_script;
 use crate::lua_script::RoomChangeForResponse;
 use evolve_error::{AppError, AppResult};
-use evolve_util::redis_util;
-use evolve_util::redis_util::redis::Commands;
-use evolve_util::redis_util::redis::ConnectionLike;
+use evolve_redis::redis::Commands;
+use evolve_redis::redis::ConnectionLike;
 
 use super::Store;
 use super::DEFAULT_ROOM;
@@ -41,7 +40,7 @@ pub struct ChangeRoomReq {
 
 impl Store for RedisStore {
     fn uname(&self, uid: &str) -> AppResult<String> {
-        let res = redis_util::sync::conn()?
+        let res = evolve_redis::sync::conn()?
             .get::<_, String>(format!("{}{}", uid, USER_NAME_POSTFIX))
             .unwrap_or_default();
 
@@ -51,7 +50,7 @@ impl Store for RedisStore {
     fn rooms(&self, uid: &str, page_index: usize, page_size: usize) -> AppResult<Vec<String>> {
         let start = ((page_index - 1) * page_size) as isize;
         let stop = (page_index * page_size - 1) as isize;
-        let res = redis_util::sync::conn()?.zrevrange(
+        let res = evolve_redis::sync::conn()?.zrevrange(
             format!("{}{}", uid, USER_ROOM_POSTFIX),
             start,
             stop,
@@ -60,13 +59,13 @@ impl Store for RedisStore {
     }
 
     fn uids(&self, room: &str) -> AppResult<Vec<String>> {
-        let res = redis_util::sync::conn()?.smembers(format!("{}{}", room, ROOM_USER_POSTFIX))?;
+        let res = evolve_redis::sync::conn()?.smembers(format!("{}{}", room, ROOM_USER_POSTFIX))?;
         Ok(res)
     }
 
     fn is_already_in_room(&self, uid: &str, room: &str) -> AppResult<bool> {
         let res =
-            redis_util::sync::conn()?.sismember(format!("{}{}", room, ROOM_USER_POSTFIX), uid)?;
+        evolve_redis::sync::conn()?.sismember(format!("{}{}", room, ROOM_USER_POSTFIX), uid)?;
         Ok(res)
     }
 
@@ -83,7 +82,7 @@ impl Store for RedisStore {
                 service_id: Some(KEYS.service_id.clone()),
             });
 
-        let value = redis_util::sync::conn()?.req_command(&cmd)?;
+        let value = evolve_redis::sync::conn()?.req_command(&cmd)?;
 
         let res = RoomChangeForResponse::from_redis_value(&value)?;
 
@@ -109,7 +108,7 @@ impl Store for RedisStore {
                         service_id: Some(KEYS.service_id.clone()),
                     });
 
-                let value = redis_util::sync::conn()?.req_command(&cmd)?;
+                let value = evolve_redis::sync::conn()?.req_command(&cmd)?;
 
                 let res = RoomChangeForResponse::from_redis_value(&value)?;
 
@@ -129,7 +128,7 @@ impl Store for RedisStore {
                             service_id: Some(KEYS.service_id.clone()),
                         });
 
-                    let value = redis_util::sync::conn()?.req_command(&cmd)?;
+                    let value = evolve_redis::sync::conn()?.req_command(&cmd)?;
 
                     let res = RoomChangeForResponse::from_redis_value(&value)?;
 
@@ -156,7 +155,7 @@ impl Store for RedisStore {
                 service_id: None,
             });
 
-        let value = redis_util::sync::conn()?.req_command(&cmd)?;
+        let value = evolve_redis::sync::conn()?.req_command(&cmd)?;
 
         let res = RoomChangeForResponse::from_redis_value(&value)?;
 
@@ -180,7 +179,7 @@ impl Store for RedisStore {
                 service_id: None,
             });
 
-        let value = redis_util::sync::conn()?.req_command(&cmd)?;
+        let value = evolve_redis::sync::conn()?.req_command(&cmd)?;
 
         let res = RoomChangeForResponse::from_redis_value(&value)?;
 

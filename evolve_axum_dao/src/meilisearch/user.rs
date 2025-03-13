@@ -7,7 +7,7 @@ pub async fn search(
     key_word: &str,
     page: &Paging,
 ) -> AppResult<(Vec<user_model::SearchedUser>, usize)> {
-    let res = evolve_util::meilisearch_util::client()
+    let res = evolve_meilisearch::client()
         .get_index(super::USER_LIST_INDEX)
         .await?
         .search()

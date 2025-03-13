@@ -4,7 +4,8 @@ use serde::Deserialize;
 use utoipa::IntoParams;
 pub mod meilisearch;
 pub mod model;
-pub mod pg_seaorm;
+pub mod pg;
+pub mod paging;
 // pub mod pg_sqlx;
 pub mod redis;
 

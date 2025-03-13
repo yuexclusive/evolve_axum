@@ -2,7 +2,7 @@ use chrono::FixedOffset;
 use evolve_axum_dao::{
     meilisearch::{self as meilisearch_dao, user as meilisearch_user_dao},
     model::user as user_model,
-    pg_seaorm::user as pg_user_dao,
+    pg::user as pg_user_dao,
     redis::user as redis_user_dao,
 };
 
@@ -195,6 +195,7 @@ pub async fn get_all() -> AppResult<Vec<user_model::User>> {
         .into_iter()
         .map(|x| x.into())
         .collect();
+
     Ok(res)
 }
 

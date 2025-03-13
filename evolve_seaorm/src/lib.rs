@@ -1,30 +1,12 @@
+#![allow(static_mut_refs)]
 use async_once::AsyncOnce;
-use once_cell::sync::Lazy;
 use once_cell::sync::OnceCell;
 use sea_orm::{ConnectOptions, Database, DatabaseConnection};
-use serde::Deserialize;
 use std::result::Result;
 
 pub type SeaOrmResult<T, E = sea_orm::DbErr> = Result<T, E>;
 
 static mut SEAORM_POOL: OnceCell<AsyncOnce<DatabaseConnection>> = OnceCell::new();
-
-#[derive(Deserialize)]
-pub struct Paging {
-    pub page_index: u64,
-    pub page_size: u64,
-}
-
-impl Paging {
-    pub fn skip(&self) -> u64 {
-        self.page_index.checked_sub(1).unwrap_or(0) * self.page_size
-    }
-
-    pub fn take(&self) -> u64 {
-        self.page_size.max(0)
-    }
-}
-
 
 pub async fn conn() -> &'static DatabaseConnection {
     unsafe {

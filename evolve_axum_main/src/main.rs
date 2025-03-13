@@ -15,7 +15,6 @@ use axum::{
     Router,
 };
 use env::ENV;
-use evolve_util::{meilisearch_util, postgres_util, redis_util};
 use std::{
     error::Error,
     net::{Ipv4Addr, SocketAddr},
@@ -63,10 +62,10 @@ async fn main() -> Result<(), Box<dyn Error>> {
         .init();
 
     // init postgres connection
-    postgres_util::init();
+    evolve_seaorm::init();
 
     // init redis
-    redis_util::init(
+    evolve_redis::init(
         &ENV.redis_host,
         ENV.redis_port,
         ENV.redis_username.clone(),
@@ -75,7 +74,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
     .await;
 
     // init meilisearch
-    meilisearch_util::init(&ENV.meilisearch_address, &ENV.meilisearch_api_key).await;
+    evolve_meilisearch::init(&ENV.meilisearch_address, &ENV.meilisearch_api_key).await;
 
     // load user search data
     user_service::load_search().await?;

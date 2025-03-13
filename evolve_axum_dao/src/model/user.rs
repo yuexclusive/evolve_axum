@@ -2,8 +2,7 @@ use evolve_datetime::FormatDateTime;
 use serde::{Deserialize, Serialize};
 use serde_json::{Map, Value};
 use utoipa::ToSchema;
-
-use crate::pg_seaorm;
+use crate::pg;
 
 #[derive(ToSchema, Debug, Serialize, Deserialize, Clone)]
 // #[sqlx(rename_all = "snake_case")]
@@ -109,27 +108,27 @@ pub struct CurrentUser {
     pub updated_at: Option<i64>,
 }
 
-impl From<pg_seaorm::entity::sea_orm_active_enums::Usertype> for UserType {
-    fn from(value: pg_seaorm::entity::sea_orm_active_enums::Usertype) -> Self {
+impl From<pg::entity::sea_orm_active_enums::Usertype> for UserType {
+    fn from(value: pg::entity::sea_orm_active_enums::Usertype) -> Self {
         match value {
-            pg_seaorm::entity::sea_orm_active_enums::Usertype::Admin => Self::Admin,
-            pg_seaorm::entity::sea_orm_active_enums::Usertype::Normal => Self::Normal,
-            pg_seaorm::entity::sea_orm_active_enums::Usertype::SuperAdmin => Self::SuperAdmin,
+            pg::entity::sea_orm_active_enums::Usertype::Admin => Self::Admin,
+            pg::entity::sea_orm_active_enums::Usertype::Normal => Self::Normal,
+            pg::entity::sea_orm_active_enums::Usertype::SuperAdmin => Self::SuperAdmin,
         }
     }
 }
 
-impl From<pg_seaorm::entity::sea_orm_active_enums::Userstatus> for UserStatus {
-    fn from(value: pg_seaorm::entity::sea_orm_active_enums::Userstatus) -> Self {
+impl From<pg::entity::sea_orm_active_enums::Userstatus> for UserStatus {
+    fn from(value: pg::entity::sea_orm_active_enums::Userstatus) -> Self {
         match value {
-            pg_seaorm::entity::sea_orm_active_enums::Userstatus::Available => Self::Available,
-            pg_seaorm::entity::sea_orm_active_enums::Userstatus::Disabled => Self::Disabled,
+            pg::entity::sea_orm_active_enums::Userstatus::Available => Self::Available,
+            pg::entity::sea_orm_active_enums::Userstatus::Disabled => Self::Disabled,
         }
     }
 }
 
-impl From<pg_seaorm::user::User> for User {
-    fn from(x: pg_seaorm::user::User) -> Self {
+impl From<pg::user::User> for User {
+    fn from(x: pg::user::User) -> Self {
         User {
             id: x.id,
             r#type: x.r#type.into(),

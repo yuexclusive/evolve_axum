@@ -1,18 +1,18 @@
 #![allow(unused)]
+#![allow(static_mut_refs)]
 use std::future::Future;
 
 use once_cell::sync::OnceCell;
 pub use redis;
 use redis::{
-    aio::{ConnectionLike, MultiplexedConnection, PubSub},
     AsyncCommands, Client, ConnectionAddr, ConnectionInfo, IntoConnectionInfo, RedisConnectionInfo,
     RedisResult, ToRedisArgs,
+    aio::{ConnectionLike, MultiplexedConnection, PubSub},
 };
 use tokio::sync::mpsc::{self, Sender};
 use tokio::sync::oneshot::{self, Receiver};
 use tokio_stream::StreamExt;
 
-use evolve_error::AppError;
 pub mod derive {
     pub use redis_encoding_derive::{from_redis, to_redis};
 }

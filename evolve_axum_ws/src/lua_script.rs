@@ -1,7 +1,6 @@
 #![allow(unused)]
 use dotenv::dotenv;
 use evolve_error::{AppError, AppResult};
-use evolve_util::redis_util;
 use once_cell::sync::Lazy;
 use once_cell::sync::OnceCell;
 use redis::FromRedisValue;
@@ -51,14 +50,14 @@ pub fn get_clear_sessions_sha<'a>() -> AppResult<&'a str> {
 #[allow(dependency_on_unit_never_type_fallback)]
 fn load_rooms_change() -> AppResult<String> {
     if !KEYS.redis_force_refresh_script_sha {
-        let sha: String = redis_util::sync::conn()?
+        let sha: String = evolve_redis::sync::conn()?
             .get(&KEYS.rooms_change_sha_key)
             .unwrap_or_default();
         if !sha.is_empty() {
             return Ok(sha);
         }
     }
-    let mut conn = redis_util::sync::conn()?;
+    let mut conn = evolve_redis::sync::conn()?;
 
     let mut cmd = redis::cmd("script");
 
@@ -73,21 +72,21 @@ fn load_rooms_change() -> AppResult<String> {
     let value = conn.req_command(&cmd)?;
 
     let res = String::from_redis_value(&value)?;
-    redis_util::sync::conn()?.set(&KEYS.rooms_change_sha_key, &res)?;
+    evolve_redis::sync::conn()?.set(&KEYS.rooms_change_sha_key, &res)?;
     Ok(res)
 }
 
 #[allow(dependency_on_unit_never_type_fallback)]
 fn load_clear_sessions() -> AppResult<String> {
     if !KEYS.redis_force_refresh_script_sha {
-        let sha: String = redis_util::sync::conn()?
+        let sha: String = evolve_redis::sync::conn()?
             .get(&KEYS.clear_sessions_sha_key)
             .unwrap_or_default();
         if !sha.is_empty() {
             return Ok(sha);
         }
     }
-    let mut conn = redis_util::sync::conn()?;
+    let mut conn = evolve_redis::sync::conn()?;
     let mut cmd = redis::cmd("script");
 
     let cmd_str = format!(
@@ -100,7 +99,7 @@ fn load_clear_sessions() -> AppResult<String> {
 
     let value = conn.req_command(&cmd)?;
     let res = String::from_redis_value(&value)?;
-    redis_util::sync::conn()?.set(&KEYS.clear_sessions_sha_key, &res)?;
+    evolve_redis::sync::conn()?.set(&KEYS.clear_sessions_sha_key, &res)?;
     Ok(res)
 }
 
@@ -117,7 +116,7 @@ pub fn clear_sessions() -> AppResult<()> {
         .arg(0) //keys number
         .arg(service_id);
 
-    let value = redis_util::sync::conn()?.req_command(&cmd)?;
+    let value = evolve_redis::sync::conn()?.req_command(&cmd)?;
 
     let res = RoomChangeForResponse::from_redis_value(&value)?;
 
