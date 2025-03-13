@@ -18,3 +18,11 @@ tokio = "1"
 tokio-stream = "0"
 redis_encoding_derive = { path = "../redis_encoding_derive" }
 evolve_error = { path = "../evolve_error" }
+sea-orm = { version = "1.1.7", features = [
+    "sqlx-postgres",
+    "runtime-tokio-native-tls",
+    "chrono",
+    "macros",
+] }
+serde = { version = "1", features = ["derive"] }
+

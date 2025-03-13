@@ -1,8 +1,11 @@
+use evolve_datetime::FormatDateTime;
 use serde::{Deserialize, Serialize};
 use serde_json::{Map, Value};
 use utoipa::ToSchema;
 
-#[derive(ToSchema, sqlx::Type, Debug, Serialize, Deserialize, Clone)]
+use crate::pg_seaorm;
+
+#[derive(ToSchema, Debug, Serialize, Deserialize, Clone)]
 // #[sqlx(rename_all = "snake_case")]
 // #[serde(rename_all(serialize = "snake_case", deserialize = "snake_case"))]
 pub enum UserType {
@@ -11,7 +14,7 @@ pub enum UserType {
     SuperAdmin,
 }
 
-#[derive(ToSchema, sqlx::Type, Debug, Serialize, Deserialize, Clone)]
+#[derive(ToSchema, Debug, Serialize, Deserialize, Clone)]
 // #[sqlx(rename_all = "snake_case")]
 // #[serde(rename_all(serialize = "snake_case", deserialize = "snake_case"))]
 pub enum UserStatus {
@@ -104,4 +107,39 @@ pub struct CurrentUser {
     pub laston: Option<i64>,
     pub created_at: i64,
     pub updated_at: Option<i64>,
+}
+
+impl From<pg_seaorm::entity::sea_orm_active_enums::Usertype> for UserType {
+    fn from(value: pg_seaorm::entity::sea_orm_active_enums::Usertype) -> Self {
+        match value {
+            pg_seaorm::entity::sea_orm_active_enums::Usertype::Admin => Self::Admin,
+            pg_seaorm::entity::sea_orm_active_enums::Usertype::Normal => Self::Normal,
+            pg_seaorm::entity::sea_orm_active_enums::Usertype::SuperAdmin => Self::SuperAdmin,
+        }
+    }
+}
+
+impl From<pg_seaorm::entity::sea_orm_active_enums::Userstatus> for UserStatus {
+    fn from(value: pg_seaorm::entity::sea_orm_active_enums::Userstatus) -> Self {
+        match value {
+            pg_seaorm::entity::sea_orm_active_enums::Userstatus::Available => Self::Available,
+            pg_seaorm::entity::sea_orm_active_enums::Userstatus::Disabled => Self::Disabled,
+        }
+    }
+}
+
+impl From<pg_seaorm::user::User> for User {
+    fn from(x: pg_seaorm::user::User) -> Self {
+        User {
+            id: x.id,
+            r#type: x.r#type.into(),
+            email: x.email,
+            status: x.status.into(),
+            name: x.name,
+            mobile: x.mobile,
+            laston: x.laston.map(|x| x.to_default()),
+            created_at: x.created_at.to_default(),
+            updated_at: x.updated_at.map(|x| x.to_default()),
+        }
+    }
 }

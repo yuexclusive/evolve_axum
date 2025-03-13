@@ -1,9 +1,8 @@
-use std::collections::HashSet;
-
+use chrono::FixedOffset;
 use evolve_axum_dao::{
     meilisearch::{self as meilisearch_dao, user as meilisearch_user_dao},
     model::user as user_model,
-    pg::user as pg_user_dao,
+    pg_seaorm::user as pg_user_dao,
     redis::user as redis_user_dao,
 };
 
@@ -145,12 +144,12 @@ mod private {
     pub(super) async fn validate_exist_email(email: &str) -> AppResult<pg_user_dao::User> {
         validate_email(email)?;
         let res = pg_user_dao::get_by_email(email).await?;
-        match res.deleted_at {
-            Some(_) => AppError::Validate {
-                msg: "email has already been deleted".to_string(),
+        match res {
+            Some(v) => Ok(v),
+            None => AppError::NotFound {
+                msg: format!("email {} is not found", email),
             }
             .into(),
-            _ => Ok(res),
         }
     }
 
@@ -225,7 +224,7 @@ pub async fn authorize(email: &str, pwd: &str) -> AppResult<()> {
 
     private::check_pwd(pwd, &user.salt, user.pwd.as_deref())?;
     let now = chrono::Utc::now();
-    user.laston = Some(now);
+    user.laston = Some(now.with_timezone(&FixedOffset::east_opt(8 * 3600).unwrap()));
     let user_copy = user.clone();
 
     tokio::try_join!(
@@ -244,35 +243,15 @@ pub async fn validate_exist_email(email: &str) -> AppResult<user_model::User> {
     Ok(private::validate_exist_email(email).await?.into())
 }
 
-pub async fn delete(ids: &[i64]) -> AppResult<Vec<i64>> {
-    let (pg_del_res, _) = tokio::try_join!(
+pub async fn delete(ids: &[i64]) -> AppResult<()> {
+    tokio::try_join!(
         pg_user_dao::delete(ids).map_err(|err| err.into()),
         meilisearch_dao::delete(meilisearch_dao::USER_LIST_INDEX, ids)
     )?;
-    let in_hs = ids.iter().map(|x| *x).collect::<HashSet<i64>>();
-    let out_hs = pg_del_res.iter().map(|x| x.id).collect::<HashSet<i64>>();
-    let diff = in_hs.difference(&out_hs).map(|x| *x).collect::<Vec<i64>>();
-    let intersection = in_hs
-        .intersection(&out_hs)
-        .map(|x| *x)
-        .collect::<Vec<i64>>();
-    if !diff.is_empty() {
-        let mut msg = format!(
-            "some users with ids {:?} cannot be found or have already been deleted",
-            diff
-        );
-        if !intersection.is_empty() {
-            msg = format!(
-                "users with ids {:?} have already been deleted; but {}",
-                intersection, msg
-            );
-        }
-        return AppError::NotFound { msg }.into();
-    }
-    Ok(out_hs.iter().map(|x| *x).collect())
+    Ok(())
 }
 
-pub async fn change_pwd(email: &str, code: &str, new_pwd: &str) -> AppResult<u64> {
+pub async fn change_pwd(email: &str, code: &str, new_pwd: &str) -> AppResult<pg_user_dao::User> {
     let user = validate_exist_email(email).await?;
     private::validate_email_code(email, &user_model::SendEmailCodeFrom::ChangePwd, code).await?;
     private::validate_pwd(new_pwd)?;
@@ -327,18 +306,24 @@ pub async fn update(
 
 pub async fn get_current_user(email: &str) -> AppResult<user_model::CurrentUser> {
     let user = pg_user_dao::get_by_email(email).await?;
-    let res = user_model::CurrentUser {
-        id: user.id,
-        r#type: user.r#type,
-        email: user.email,
-        status: user.status,
-        mobile: user.mobile,
-        name: user.name,
-        created_at: user.created_at.timestamp(),
-        updated_at: user.updated_at.map(|x| x.timestamp()),
-        laston: user.laston.map(|x| x.timestamp()),
-    };
-    Ok(res)
+    if let Some(user) = user {
+        let res = user_model::CurrentUser {
+            id: user.id,
+            r#type: user.r#type.into(),
+            email: user.email,
+            status: user.status.into(),
+            mobile: user.mobile,
+            name: user.name,
+            created_at: user.created_at.timestamp(),
+            updated_at: user.updated_at.map(|x| x.timestamp()),
+            laston: user.laston.map(|x| x.timestamp()),
+        };
+        return Ok(res);
+    }
+    AppError::NotFound {
+        msg: format!("email {} is not found", email),
+    }
+    .into()
 }
 
 pub async fn load_search() -> AppResult<()> {

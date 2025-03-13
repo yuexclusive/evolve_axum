@@ -7,6 +7,7 @@ use serde::{Deserialize, Serialize};
 use axum_extra::typed_header::TypedHeaderRejection;
 use jsonwebtoken::errors::Error as JwtError;
 use redis::RedisError;
+use sea_orm::error::DbErr as SeaORMDBError;
 use std::fmt::Display;
 pub use thiserror::Error;
 use utoipa::ToSchema;
@@ -50,13 +51,13 @@ pub enum AppError {
     Jwt(#[from] JwtError),
 
     #[error(transparent)]
+    SeaORMDBError(#[from] SeaORMDBError),
+
+    #[error(transparent)]
     Redis(#[from] RedisError),
 
     #[error(transparent)]
     ChronoParse(#[from] chrono::ParseError),
-
-    #[error(transparent)]
-    Sqlx(#[from] sqlx::Error),
 
     #[error(transparent)]
     Meilisearch(#[from] meilisearch_sdk::errors::Error),
@@ -181,10 +182,6 @@ impl IntoResponse for AppError {
             AppError::ChronoParse(err) => (
                 StatusCode::INTERNAL_SERVER_ERROR,
                 ErrorResp::new(500100005, &err.to_string(), None),
-            ),
-            AppError::Sqlx(err) => (
-                StatusCode::INTERNAL_SERVER_ERROR,
-                ErrorResp::new(500100006, &err.to_string(), None),
             ),
             AppError::Meilisearch(err) => (
                 StatusCode::INTERNAL_SERVER_ERROR,
