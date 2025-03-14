@@ -1,6 +1,6 @@
 use crate::error::{WSError, WSResult};
-use crate::lua_script;
-use crate::lua_script::RoomChangeForResponse;
+use crate::excute_lua_script;
+use crate::excute_lua_script::RoomChangeForResponse;
 use evolve_redis::redis::Commands;
 use evolve_redis::redis::ConnectionLike;
 
@@ -8,7 +8,7 @@ use super::Store;
 use super::DEFAULT_ROOM;
 use serde::{Deserialize, Serialize};
 
-use crate::lua_script::KEYS;
+use crate::excute_lua_script::KEYS;
 use evolve_redis::derive::{from_redis, to_redis};
 use redis::FromRedisValue;
 
@@ -72,7 +72,7 @@ impl Store for RedisStore {
     fn join(&self, uid: &str, uname: &str, room: &str) -> WSResult<()> {
         let mut cmd = redis::cmd("evalsha");
 
-        cmd.arg(lua_script::get_rooms_change_sha()?) //sha
+        cmd.arg(excute_lua_script::get_rooms_change_sha()?) //sha
             .arg(0) //keys number
             .arg(&ChangeRoomReq {
                 id: uid.to_string(),
@@ -98,7 +98,7 @@ impl Store for RedisStore {
 
         match room {
             Some(room) => {
-                cmd.arg(lua_script::get_rooms_change_sha()?) //sha
+                cmd.arg(excute_lua_script::get_rooms_change_sha()?) //sha
                     .arg(0) //keys number
                     .arg(&ChangeRoomReq {
                         id: uid.to_string(),
@@ -118,7 +118,7 @@ impl Store for RedisStore {
             }
             None => {
                 for room in self.rooms(uid, 1, 1000)? {
-                    cmd.arg(lua_script::get_rooms_change_sha()?) //sha
+                    cmd.arg(excute_lua_script::get_rooms_change_sha()?) //sha
                         .arg(0) //keys number
                         .arg(&ChangeRoomReq {
                             id: uid.to_string(),
@@ -145,7 +145,7 @@ impl Store for RedisStore {
     fn update_name(&self, uid: &str, uname: &str) -> WSResult<()> {
         let mut cmd = redis::cmd("evalsha");
 
-        cmd.arg(lua_script::get_rooms_change_sha()?) //sha
+        cmd.arg(excute_lua_script::get_rooms_change_sha()?) //sha
             .arg(0) //keys number
             .arg(&ChangeRoomReq {
                 id: uid.to_string(),
@@ -169,7 +169,7 @@ impl Store for RedisStore {
     fn update_room_order(&self, uid: &str, room: &str) -> WSResult<()> {
         let mut cmd = redis::cmd("evalsha");
 
-        cmd.arg(lua_script::get_rooms_change_sha()?) //sha
+        cmd.arg(excute_lua_script::get_rooms_change_sha()?) //sha
             .arg(0) //keys number
             .arg(&ChangeRoomReq {
                 id: uid.to_string(),

@@ -45,7 +45,6 @@ openssl = { version = "0", features = ["vendored"] }
 evolve_meilisearch = { path = "../evolve_meilisearch" }
 evolve_redis = { path = "../evolve_redis" }
 evolve_seaorm = { path = "../evolve_seaorm" }
-evolve_datetime = { path = "../evolve_datetime" }
 demo_server_error = { path = "../demo_server_error" }
 demo_server_dao = { path = "../demo_server_dao" }
 evolve_ws = { path = "../evolve_ws" }

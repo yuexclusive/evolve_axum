@@ -21,10 +21,4 @@ reqwest = "0"
 url = "2"
 http = "1"
 anyhow = "1"
-sea-orm = { version = "1.1.7", features = [
-    "sqlx-postgres",
-    "runtime-tokio-native-tls",
-    "chrono",
-    "macros",
-] }
-
+sea-orm = "1.1.7"

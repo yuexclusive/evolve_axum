@@ -141,7 +141,7 @@ async fn shutdown_signal(clear_sessions: bool) {
     tokio::select! {
         _ = ctrl_c => {
             if clear_sessions {
-                evolve_ws::lua_script::clear_sessions().unwrap();
+                evolve_ws::excute_lua_script::clear_sessions().unwrap();
                 tracing::debug!("clear sessions done");
             }
             tracing::debug!("Ctrl+C received");

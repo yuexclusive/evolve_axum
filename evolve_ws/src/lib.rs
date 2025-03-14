@@ -1,5 +1,5 @@
 pub mod chat_redis;
-pub mod lua_script;
+pub mod excute_lua_script;
 pub mod store_redis;
 use error::WSResult;
 use evolve_redis::derive::{from_redis, to_redis};

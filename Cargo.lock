@@ -683,7 +683,6 @@ dependencies = [
  "demo_server_dao",
  "demo_server_error",
  "dotenv",
- "evolve_datetime",
  "evolve_mailer",
  "evolve_meilisearch",
  "evolve_redis",
