@@ -1,11 +1,11 @@
 #![allow(unused)]
 use dotenv::dotenv;
 use evolve_error::{AppError, AppResult};
+use evolve_redis::derive::from_redis;
 use once_cell::sync::Lazy;
 use once_cell::sync::OnceCell;
 use redis::FromRedisValue;
 use redis::{Commands, ConnectionLike};
-use evolve_redis_encoding_derive::from_redis;
 use serde::{Deserialize, Serialize};
 
 #[from_redis]

@@ -1,7 +1,7 @@
 pub mod chat_redis;
-pub mod store_redis;
 pub mod lua_script;
-use evolve_redis_encoding_derive::{from_redis, to_redis};
+pub mod store_redis;
+use evolve_redis::derive::{from_redis, to_redis};
 use serde::{Deserialize, Serialize};
 
 use evolve_error::AppResult;

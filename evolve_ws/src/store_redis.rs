@@ -9,8 +9,8 @@ use super::DEFAULT_ROOM;
 use serde::{Deserialize, Serialize};
 
 use crate::lua_script::KEYS;
+use evolve_redis::derive::{from_redis, to_redis};
 use redis::FromRedisValue;
-use evolve_redis_encoding_derive::{from_redis, to_redis};
 
 const USER_NAME_POSTFIX: &str = "_name";
 const USER_ROOM_POSTFIX: &str = "_rooms";
@@ -65,7 +65,7 @@ impl Store for RedisStore {
 
     fn is_already_in_room(&self, uid: &str, room: &str) -> AppResult<bool> {
         let res =
-        evolve_redis::sync::conn()?.sismember(format!("{}{}", room, ROOM_USER_POSTFIX), uid)?;
+            evolve_redis::sync::conn()?.sismember(format!("{}{}", room, ROOM_USER_POSTFIX), uid)?;
         Ok(res)
     }
 
