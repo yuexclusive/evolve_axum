@@ -4,6 +4,5 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-evolve_error = { path = "../evolve_error" }
 chrono = { version = "0", features = ["serde"] }
 tracing = "0"

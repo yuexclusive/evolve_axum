@@ -4,7 +4,7 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-redis_encoding_derive = { path = "../redis_encoding_derive" }
+evolve_redis_encoding_derive = { path = "../evolve_redis_encoding_derive" }
 serde = { version = "1", features = ["derive"] }
 axum = { version = "0", features = ["macros", "tracing", "ws"] }
 fancy-regex = "0"

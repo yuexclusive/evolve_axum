@@ -1,5 +1,5 @@
 [package]
-name = "redis_encoding_derive"
+name = "evolve_redis_encoding_derive"
 version = "0.1.0"
 edition = "2021"
 

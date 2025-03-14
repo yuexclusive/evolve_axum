@@ -632,11 +632,11 @@ dependencies = [
  "evolve_error",
  "evolve_meilisearch",
  "evolve_redis",
+ "evolve_redis_encoding_derive",
  "evolve_seaorm",
  "meilisearch-sdk",
  "once_cell",
  "redis",
- "redis_encoding_derive",
  "sea-orm",
  "serde",
  "serde_json",
@@ -833,7 +833,6 @@ name = "evolve_datetime"
 version = "0.1.0"
 dependencies = [
  "chrono",
- "evolve_error",
  "tracing",
 ]
 
@@ -885,12 +884,20 @@ version = "0.1.0"
 dependencies = [
  "async_once",
  "dotenv",
+ "evolve_redis_encoding_derive",
  "once_cell",
  "redis",
- "redis_encoding_derive",
  "tokio",
  "tokio-stream",
  "tracing",
+]
+
+[[package]]
+name = "evolve_redis_encoding_derive"
+version = "0.1.0"
+dependencies = [
+ "quote",
+ "syn 2.0.100",
 ]
 
 [[package]]
@@ -912,12 +919,12 @@ dependencies = [
  "dotenv",
  "evolve_error",
  "evolve_redis",
+ "evolve_redis_encoding_derive",
  "fancy-regex",
  "futures",
  "once_cell",
  "rand 0.8.5",
  "redis",
- "redis_encoding_derive",
  "serde",
  "serde_json",
  "tokio",
@@ -2433,14 +2440,6 @@ dependencies = [
  "tokio",
  "tokio-util",
  "url",
-]
-
-[[package]]
-name = "redis_encoding_derive"
-version = "0.1.0"
-dependencies = [
- "quote",
- "syn 2.0.100",
 ]
 
 [[package]]

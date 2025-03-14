@@ -2,7 +2,6 @@
 use std::str::FromStr;
 
 use chrono::{DateTime, FixedOffset, Local, LocalResult, NaiveDateTime, TimeZone, Utc};
-use evolve_error::{AppError, AppResult};
 
 pub trait FormatDateTime {
     fn to_default(&self) -> String;

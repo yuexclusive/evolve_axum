@@ -11,4 +11,4 @@ dotenv = "0"
 redis = { version = "0", features = ["tokio-comp"] }
 tokio = "1"
 tokio-stream = "0"
-redis_encoding_derive = { path = "../redis_encoding_derive" }
+evolve_redis_encoding_derive = { path = "../evolve_redis_encoding_derive" }

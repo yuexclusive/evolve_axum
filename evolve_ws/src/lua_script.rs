@@ -5,7 +5,7 @@ use once_cell::sync::Lazy;
 use once_cell::sync::OnceCell;
 use redis::FromRedisValue;
 use redis::{Commands, ConnectionLike};
-use redis_encoding_derive::from_redis;
+use evolve_redis_encoding_derive::from_redis;
 use serde::{Deserialize, Serialize};
 
 #[from_redis]

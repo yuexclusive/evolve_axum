@@ -10,7 +10,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::lua_script::KEYS;
 use redis::FromRedisValue;
-use redis_encoding_derive::{from_redis, to_redis};
+use evolve_redis_encoding_derive::{from_redis, to_redis};
 
 const USER_NAME_POSTFIX: &str = "_name";
 const USER_ROOM_POSTFIX: &str = "_rooms";

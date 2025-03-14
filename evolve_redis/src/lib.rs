@@ -14,7 +14,7 @@ use tokio::sync::oneshot::{self, Receiver};
 use tokio_stream::StreamExt;
 
 pub mod derive {
-    pub use redis_encoding_derive::{from_redis, to_redis};
+    pub use evolve_redis_encoding_derive::{from_redis, to_redis};
 }
 
 static CLIENT: OnceCell<Client> = OnceCell::new();

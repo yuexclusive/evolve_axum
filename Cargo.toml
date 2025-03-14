@@ -4,7 +4,7 @@ members = [
     "demo_server_main",
     "demo_server_cli",
     "demo_server_dao",
-    "redis_encoding_derive",
+    "evolve_redis_encoding_derive",
     "evolve_error",
     "evolve_datetime",
     "evolve_ws",
