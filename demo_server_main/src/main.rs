@@ -101,7 +101,7 @@ async fn serve(app: Router, port: u16, clear_sessions: bool) {
     let listener = TcpListener::bind(SocketAddr::from((Ipv4Addr::UNSPECIFIED, port)))
         .await
         .unwrap();
-    tracing::debug!("listening on {}", listener.local_addr().unwrap());
+    tracing::info!("listening on {}", listener.local_addr().unwrap());
     axum::serve(
         listener,
         app.layer(
@@ -138,16 +138,21 @@ async fn shutdown_signal(clear_sessions: bool) {
     #[cfg(not(unix))]
     let terminate = std::future::pending::<()>();
 
+    let clear_ws_sessions = || {
+        if clear_sessions {
+            evolve_ws::excute_lua_script::clear_sessions().unwrap();
+            tracing::info!("clear ws sessions done");
+        }
+    };
+
     tokio::select! {
         _ = ctrl_c => {
-            if clear_sessions {
-                evolve_ws::excute_lua_script::clear_sessions().unwrap();
-                tracing::debug!("clear sessions done");
-            }
-            tracing::debug!("Ctrl+C received");
+            tracing::info!("Ctrl+C signal received");
+            clear_ws_sessions();
         },
         _ = terminate => {
-            tracing::debug!("terminate signal received");
+            tracing::info!("terminate signal received");
+            clear_ws_sessions();
         },
     }
 }

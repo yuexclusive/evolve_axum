@@ -109,7 +109,7 @@ pub fn clear_sessions() -> WSResult<()> {
 
     let sha = get_clear_sessions_sha()?;
 
-    tracing::debug!("clear_sessions lua sha: {}", sha);
+    tracing::info!("clear_sessions lua sha: {}", sha);
 
     cmd.arg(sha) //sha
         .arg(0) //keys number
