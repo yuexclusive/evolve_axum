@@ -245,4 +245,26 @@ mod tests {
         let s = String::from_utf8_lossy(&body).to_string();
         assert_eq!(&s, "Pong");
     }
+
+    #[tokio::test]
+    async fn ping_json() {
+        let router = web_server();
+        // `Router` implements `tower::Service<Request<Body>>` so we can
+        // call it like any tower service, no need to run an HTTP server.
+        let response = router
+            .oneshot(
+                Request::builder()
+                    .uri("/ping_json")
+                    .header("Content-Type", "application/json")
+                    .body(Body::from(r#"{"data": "data"}"#))
+                    .unwrap(),
+            )
+            .await
+            .unwrap();
+
+        assert_eq!(response.status(), StatusCode::OK);
+        let body = response.into_body().collect().await.unwrap().to_bytes();
+        let s = String::from_utf8_lossy(&body).to_string();
+        assert_eq!(&s, r#"{"data":{"data":"data"}}"#);
+    }
 }

@@ -1,3 +1,4 @@
+use axum::{http::StatusCode, response::IntoResponse};
 use redis::RedisError;
 use thiserror::Error;
 
@@ -10,4 +11,19 @@ pub enum WSError {
 
     #[error("lua script excute error: {}",.msg)]
     LuaScriptExcuteError { msg: String },
+}
+
+impl IntoResponse for WSError {
+    fn into_response(self) -> axum::response::Response {
+        match self {
+            WSError::Redis(e) => (
+                StatusCode::INTERNAL_SERVER_ERROR,
+                format!("redis error: {}", e),
+            )
+                .into_response(),
+            WSError::LuaScriptExcuteError { msg } => {
+                (StatusCode::INTERNAL_SERVER_ERROR, msg).into_response()
+            }
+        }
+    }
 }

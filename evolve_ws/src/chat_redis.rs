@@ -16,7 +16,7 @@ use serde_json::json;
 use std::{collections::HashMap, sync::Arc};
 use tokio::task::JoinHandle;
 
-use crate::error::WSResult;
+use crate::error::{WSError, WSResult};
 
 use super::{
     BoradCastContent, BroadCastType, ContentType, ReplyContent, ReplyType, DEFAULT_ROOM,
@@ -44,13 +44,16 @@ where
 pub async fn websocket_handler<T>(
     ws: WebSocketUpgrade,
     State(state): State<Arc<WSState<T>>>,
-) -> impl IntoResponse
+) -> Result<impl IntoResponse, WSError>
 where
     T: Store + Sync + Send + 'static,
 {
     let uid = uuid::Uuid::new_v4().to_string();
     let uname = format!("tourist_{}", rand::thread_rng().gen_range(10000..99999));
-    ws.on_upgrade(move |socket| websocket(socket, state, uid, uname))
+    let res = ws
+        .on_failed_upgrade(|e| tracing::error!("Failed to upgrade websocket: {e}"))
+        .on_upgrade(move |socket| websocket(socket, state, uid, uname));
+    Ok(res)
 }
 
 async fn publish(message: BoradCastContent) -> RedisResult<()> {
