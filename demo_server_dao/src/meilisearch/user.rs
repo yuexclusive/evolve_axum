@@ -1,6 +1,6 @@
 use crate::model::user as user_model;
 use crate::Paging;
-use evolve_error::AppResult;
+use demo_server_error::AppResult;
 use meilisearch_sdk::search::Selectors;
 
 pub async fn search(

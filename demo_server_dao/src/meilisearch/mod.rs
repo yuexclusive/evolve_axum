@@ -1,6 +1,6 @@
 pub mod user;
 
-use evolve_error::AppResult;
+use demo_server_error::AppResult;
 use evolve_meilisearch::{self, Settings};
 use serde::Serialize;
 use std::fmt::Display;

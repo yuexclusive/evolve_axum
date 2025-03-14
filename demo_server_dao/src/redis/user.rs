@@ -1,5 +1,5 @@
 use crate::model::user as user_model;
-use evolve_error::AppResult;
+use demo_server_error::AppResult;
 use evolve_redis::{self, redis::AsyncCommands};
 
 fn email_code_key(email: &str, from: &user_model::SendEmailCodeFrom) -> String {

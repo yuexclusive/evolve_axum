@@ -627,9 +627,9 @@ version = "0.1.0"
 dependencies = [
  "async_once",
  "chrono",
+ "demo_server_error",
  "dotenv",
  "evolve_datetime",
- "evolve_error",
  "evolve_meilisearch",
  "evolve_redis",
  "evolve_seaorm",
@@ -648,6 +648,30 @@ dependencies = [
 ]
 
 [[package]]
+name = "demo_server_error"
+version = "0.1.0"
+dependencies = [
+ "anyhow",
+ "axum",
+ "axum-extra",
+ "chrono",
+ "fancy-regex",
+ "http",
+ "jsonwebtoken",
+ "lettre",
+ "meilisearch-sdk",
+ "redis",
+ "reqwest",
+ "sea-orm",
+ "serde",
+ "serde_json",
+ "serde_urlencoded",
+ "thiserror 2.0.12",
+ "url",
+ "utoipa",
+]
+
+[[package]]
 name = "demo_server_main"
 version = "0.0.1"
 dependencies = [
@@ -657,9 +681,9 @@ dependencies = [
  "base64 0.21.7",
  "chrono",
  "demo_server_dao",
+ "demo_server_error",
  "dotenv",
  "evolve_datetime",
- "evolve_error",
  "evolve_mailer",
  "evolve_meilisearch",
  "evolve_redis",
@@ -836,30 +860,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "evolve_error"
-version = "0.1.0"
-dependencies = [
- "anyhow",
- "axum",
- "axum-extra",
- "chrono",
- "fancy-regex",
- "http",
- "jsonwebtoken",
- "lettre",
- "meilisearch-sdk",
- "redis",
- "reqwest",
- "sea-orm",
- "serde",
- "serde_json",
- "serde_urlencoded",
- "thiserror 1.0.69",
- "url",
- "utoipa",
-]
-
-[[package]]
 name = "evolve_mailer"
 version = "0.1.0"
 dependencies = [
@@ -916,7 +916,6 @@ version = "0.1.0"
 dependencies = [
  "axum",
  "dotenv",
- "evolve_error",
  "evolve_redis",
  "fancy-regex",
  "futures",
@@ -925,6 +924,7 @@ dependencies = [
  "redis",
  "serde",
  "serde_json",
+ "thiserror 2.0.12",
  "tokio",
  "tracing",
  "uuid",

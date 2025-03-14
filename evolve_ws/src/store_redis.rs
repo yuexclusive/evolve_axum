@@ -1,6 +1,6 @@
+use crate::error::{WSError, WSResult};
 use crate::lua_script;
 use crate::lua_script::RoomChangeForResponse;
-use evolve_error::{AppError, AppResult};
 use evolve_redis::redis::Commands;
 use evolve_redis::redis::ConnectionLike;
 
@@ -39,7 +39,7 @@ pub struct ChangeRoomReq {
 }
 
 impl Store for RedisStore {
-    fn uname(&self, uid: &str) -> AppResult<String> {
+    fn uname(&self, uid: &str) -> WSResult<String> {
         let res = evolve_redis::sync::conn()?
             .get::<_, String>(format!("{}{}", uid, USER_NAME_POSTFIX))
             .unwrap_or_default();
@@ -47,7 +47,7 @@ impl Store for RedisStore {
         Ok(res)
     }
 
-    fn rooms(&self, uid: &str, page_index: usize, page_size: usize) -> AppResult<Vec<String>> {
+    fn rooms(&self, uid: &str, page_index: usize, page_size: usize) -> WSResult<Vec<String>> {
         let start = ((page_index - 1) * page_size) as isize;
         let stop = (page_index * page_size - 1) as isize;
         let res = evolve_redis::sync::conn()?.zrevrange(
@@ -58,18 +58,18 @@ impl Store for RedisStore {
         Ok(res)
     }
 
-    fn uids(&self, room: &str) -> AppResult<Vec<String>> {
+    fn uids(&self, room: &str) -> WSResult<Vec<String>> {
         let res = evolve_redis::sync::conn()?.smembers(format!("{}{}", room, ROOM_USER_POSTFIX))?;
         Ok(res)
     }
 
-    fn is_already_in_room(&self, uid: &str, room: &str) -> AppResult<bool> {
+    fn is_already_in_room(&self, uid: &str, room: &str) -> WSResult<bool> {
         let res =
             evolve_redis::sync::conn()?.sismember(format!("{}{}", room, ROOM_USER_POSTFIX), uid)?;
         Ok(res)
     }
 
-    fn join(&self, uid: &str, uname: &str, room: &str) -> AppResult<()> {
+    fn join(&self, uid: &str, uname: &str, room: &str) -> WSResult<()> {
         let mut cmd = redis::cmd("evalsha");
 
         cmd.arg(lua_script::get_rooms_change_sha()?) //sha
@@ -87,13 +87,13 @@ impl Store for RedisStore {
         let res = RoomChangeForResponse::from_redis_value(&value)?;
 
         if res.status != 0 {
-            return Err(AppError::Internal { msg: res.msg });
+            return Err(WSError::LuaScriptExcuteError { msg: res.msg }.into());
         }
 
         Ok(())
     }
 
-    fn quit(&self, uid: &str, room: Option<&str>) -> AppResult<()> {
+    fn quit(&self, uid: &str, room: Option<&str>) -> WSResult<()> {
         let mut cmd = redis::cmd("evalsha");
 
         match room {
@@ -113,7 +113,7 @@ impl Store for RedisStore {
                 let res = RoomChangeForResponse::from_redis_value(&value)?;
 
                 if res.status != 0 {
-                    return Err(AppError::Internal { msg: res.msg });
+                    return Err(WSError::LuaScriptExcuteError { msg: res.msg }.into());
                 }
             }
             None => {
@@ -133,7 +133,7 @@ impl Store for RedisStore {
                     let res = RoomChangeForResponse::from_redis_value(&value)?;
 
                     if res.status != 0 {
-                        return Err(AppError::Internal { msg: res.msg });
+                        return Err(WSError::LuaScriptExcuteError { msg: res.msg }.into());
                     }
                 }
             }
@@ -142,7 +142,7 @@ impl Store for RedisStore {
         Ok(())
     }
 
-    fn update_name(&self, uid: &str, uname: &str) -> AppResult<()> {
+    fn update_name(&self, uid: &str, uname: &str) -> WSResult<()> {
         let mut cmd = redis::cmd("evalsha");
 
         cmd.arg(lua_script::get_rooms_change_sha()?) //sha
@@ -160,13 +160,13 @@ impl Store for RedisStore {
         let res = RoomChangeForResponse::from_redis_value(&value)?;
 
         if res.status != 0 {
-            return Err(AppError::Internal { msg: res.msg });
+            return Err(WSError::LuaScriptExcuteError { msg: res.msg }.into());
         }
 
         Ok(())
     }
 
-    fn update_room_order(&self, uid: &str, room: &str) -> AppResult<()> {
+    fn update_room_order(&self, uid: &str, room: &str) -> WSResult<()> {
         let mut cmd = redis::cmd("evalsha");
 
         cmd.arg(lua_script::get_rooms_change_sha()?) //sha
@@ -184,7 +184,7 @@ impl Store for RedisStore {
         let res = RoomChangeForResponse::from_redis_value(&value)?;
 
         if res.status != 0 {
-            return Err(AppError::Internal { msg: res.msg });
+            return Err(WSError::LuaScriptExcuteError { msg: res.msg }.into());
         }
 
         Ok(())

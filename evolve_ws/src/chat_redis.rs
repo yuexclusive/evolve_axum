@@ -11,16 +11,17 @@ use futures::{
     SinkExt,
 };
 use rand::Rng;
+use redis::RedisResult;
 use serde_json::json;
 use std::{collections::HashMap, sync::Arc};
 use tokio::task::JoinHandle;
+
+use crate::error::WSResult;
 
 use super::{
     BoradCastContent, BroadCastType, ContentType, ReplyContent, ReplyType, DEFAULT_ROOM,
     REDIS_WS_CHANNEL,
 };
-
-use evolve_error::AppResult;
 
 use super::Store;
 
@@ -52,7 +53,7 @@ where
     ws.on_upgrade(move |socket| websocket(socket, state, uid, uname))
 }
 
-async fn publish(message: BoradCastContent) -> AppResult<()> {
+async fn publish(message: BoradCastContent) -> RedisResult<()> {
     let res = evolve_redis::publish(REDIS_WS_CHANNEL, message).await?;
     Ok(res)
 }
@@ -133,7 +134,7 @@ pub async fn handle_msg_from_hub<T>(
     state: Arc<WSState<T>>,
     current_uid_for_send: String,
     tx_websocket: Arc<tokio::sync::Mutex<SplitSink<WebSocket, Message>>>,
-) -> AppResult<JoinHandle<()>>
+) -> WSResult<JoinHandle<()>>
 where
     T: Store + Sync + Send + 'static,
 {

@@ -11,7 +11,7 @@ use rand::Rng;
 
 use serde::{Deserialize, Serialize};
 
-use evolve_error::{AppError, AppResult};
+use demo_server_error::{AppError, AppResult};
 
 mod private {
     use base64::{engine::general_purpose, Engine as _};
@@ -25,7 +25,7 @@ mod private {
     use super::{
         meilisearch_dao, pg_user_dao, redis_user_dao, user_model, AppResult, Deserialize, Serialize,
     };
-    use evolve_error::AppError;
+    use demo_server_error::AppError;
     use fancy_regex::Regex;
     use sha2::Digest;
     use uuid::Uuid;

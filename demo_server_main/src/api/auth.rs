@@ -19,7 +19,7 @@ use crate::env::ENV;
 use crate::service::user as user_service;
 use demo_server_dao::model::user::CurrentUser;
 use demo_server_dao::model::user::{UserStatus, UserType};
-use evolve_error::{AppError, AuthError, ErrorResp};
+use demo_server_error::{AppError, AuthError, ErrorResp};
 
 struct Keys {
     encoding: EncodingKey,

@@ -1,6 +1,6 @@
 #![allow(unused)]
+use crate::error::{WSError, WSResult};
 use dotenv::dotenv;
-use evolve_error::{AppError, AppResult};
 use evolve_redis::derive::from_redis;
 use once_cell::sync::Lazy;
 use once_cell::sync::OnceCell;
@@ -35,20 +35,19 @@ pub static KEYS: Lazy<Keys> = Lazy::new(|| Keys {
         Ok(v) => v == "true",
         Err(_) => true,
     },
-    // service_id: "uuid::Uuid::new_v4().to_string()",
     service_id: "MY_SERVICE_ID".to_string(),
 });
 
-pub fn get_rooms_change_sha<'a>() -> AppResult<&'a str> {
+pub fn get_rooms_change_sha<'a>() -> WSResult<&'a str> {
     Ok(ROOMS_CHANGE_SHA.get_or_try_init(|| load_rooms_change())?)
 }
 
-pub fn get_clear_sessions_sha<'a>() -> AppResult<&'a str> {
+pub fn get_clear_sessions_sha<'a>() -> WSResult<&'a str> {
     Ok(CLEAR_SESSIONS_SHA.get_or_try_init(|| load_clear_sessions())?)
 }
 
 #[allow(dependency_on_unit_never_type_fallback)]
-fn load_rooms_change() -> AppResult<String> {
+fn load_rooms_change() -> WSResult<String> {
     if !KEYS.redis_force_refresh_script_sha {
         let sha: String = evolve_redis::sync::conn()?
             .get(&KEYS.rooms_change_sha_key)
@@ -77,7 +76,7 @@ fn load_rooms_change() -> AppResult<String> {
 }
 
 #[allow(dependency_on_unit_never_type_fallback)]
-fn load_clear_sessions() -> AppResult<String> {
+fn load_clear_sessions() -> WSResult<String> {
     if !KEYS.redis_force_refresh_script_sha {
         let sha: String = evolve_redis::sync::conn()?
             .get(&KEYS.clear_sessions_sha_key)
@@ -103,7 +102,7 @@ fn load_clear_sessions() -> AppResult<String> {
     Ok(res)
 }
 
-pub fn clear_sessions() -> AppResult<()> {
+pub fn clear_sessions() -> WSResult<()> {
     let mut cmd = redis::cmd("evalsha");
 
     let service_id = &KEYS.service_id;
@@ -121,7 +120,7 @@ pub fn clear_sessions() -> AppResult<()> {
     let res = RoomChangeForResponse::from_redis_value(&value)?;
 
     if res.status != 0 {
-        return Err(AppError::Internal { msg: res.msg });
+        return Err(WSError::LuaScriptExcuteError { msg: res.msg }.into());
     }
     Ok(())
 }

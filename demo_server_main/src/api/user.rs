@@ -11,7 +11,7 @@ use demo_server_dao::model::user::SearchedUser;
 use demo_server_dao::model::user::SendEmailCodeFrom;
 use demo_server_dao::model::user::User;
 use demo_server_dao::model::user::UserFormatter;
-use evolve_error::{AppError, ErrorResp};
+use demo_server_error::{AppError, ErrorResp};
 use serde::{Deserialize, Serialize};
 use utoipa::{IntoParams, OpenApi, ToSchema};
 

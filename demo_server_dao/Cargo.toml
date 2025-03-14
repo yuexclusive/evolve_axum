@@ -20,7 +20,7 @@ redis = { version = "0", features = ["tokio-comp"] }
 tokio = { version = "1", features = ["full"] }
 tokio-stream = "0"
 serde = { version = "1", features = ["derive"] }
-evolve_error = { path = "../evolve_error" }
+demo_server_error = { path = "../demo_server_error" }
 serde_json = "1"
 utoipa = { git = "https://github.com/juhaku/utoipa.git", branch = "master" }
 evolve_meilisearch = { path = "../evolve_meilisearch" }

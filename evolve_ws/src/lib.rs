@@ -1,10 +1,11 @@
 pub mod chat_redis;
 pub mod lua_script;
 pub mod store_redis;
+use error::WSResult;
 use evolve_redis::derive::{from_redis, to_redis};
 use serde::{Deserialize, Serialize};
+pub mod error;
 
-use evolve_error::AppResult;
 
 pub const DEFAULT_ROOM: &str = "main";
 pub const REDIS_WS_CHANNEL: &str = "evolve_axum_ws";
@@ -49,19 +50,19 @@ pub enum ContentType {
 }
 
 pub trait Store {
-    fn uname(&self, uid: &str) -> AppResult<String>;
+    fn uname(&self, uid: &str) -> WSResult<String>;
 
-    fn rooms(&self, uid: &str, page_index: usize, page_size: usize) -> AppResult<Vec<String>>;
+    fn rooms(&self, uid: &str, page_index: usize, page_size: usize) -> WSResult<Vec<String>>;
 
-    fn uids(&self, room: &str) -> AppResult<Vec<String>>;
+    fn uids(&self, room: &str) -> WSResult<Vec<String>>;
 
-    fn is_already_in_room(&self, uid: &str, room: &str) -> AppResult<bool>;
+    fn is_already_in_room(&self, uid: &str, room: &str) -> WSResult<bool>;
 
-    fn join(&self, uid: &str, uname: &str, room: &str) -> AppResult<()>;
+    fn join(&self, uid: &str, uname: &str, room: &str) -> WSResult<()>;
 
-    fn quit(&self, uid: &str, room: Option<&str>) -> AppResult<()>;
+    fn quit(&self, uid: &str, room: Option<&str>) -> WSResult<()>;
 
-    fn update_name(&self, uid: &str, uname: &str) -> AppResult<()>;
+    fn update_name(&self, uid: &str, uname: &str) -> WSResult<()>;
 
-    fn update_room_order(&self, uid: &str, room: &str) -> AppResult<()>;
+    fn update_room_order(&self, uid: &str, room: &str) -> WSResult<()>;
 }

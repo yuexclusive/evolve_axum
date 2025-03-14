@@ -2,7 +2,7 @@ use crate::paging::Paging;
 use chrono::{FixedOffset, TimeZone};
 pub use entity::user::Model as User;
 use evolve_datetime::FormatDateTime;
-use evolve_error::AppResult;
+use demo_server_error::AppResult;
 use sea_orm::{
     ActiveModelTrait,
     ActiveValue::{self, Set},
