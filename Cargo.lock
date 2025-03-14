@@ -609,6 +609,87 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "575f75dfd25738df5b91b8e43e14d44bda14637a58fae779fd2b064f8bf3e010"
 
 [[package]]
+name = "demo_server_cli"
+version = "0.0.1"
+dependencies = [
+ "reqwest",
+ "serde",
+ "serde_json",
+ "serde_repr",
+ "serde_with",
+ "url",
+ "uuid",
+]
+
+[[package]]
+name = "demo_server_dao"
+version = "0.1.0"
+dependencies = [
+ "async_once",
+ "chrono",
+ "dotenv",
+ "evolve_datetime",
+ "evolve_error",
+ "evolve_meilisearch",
+ "evolve_redis",
+ "evolve_seaorm",
+ "meilisearch-sdk",
+ "once_cell",
+ "redis",
+ "redis_encoding_derive",
+ "sea-orm",
+ "serde",
+ "serde_json",
+ "tokio",
+ "tokio-stream",
+ "tracing",
+ "tracing-subscriber",
+ "utoipa",
+ "uuid",
+]
+
+[[package]]
+name = "demo_server_main"
+version = "0.0.1"
+dependencies = [
+ "anyhow",
+ "axum",
+ "axum-extra",
+ "base64 0.21.7",
+ "chrono",
+ "demo_server_dao",
+ "dotenv",
+ "evolve_datetime",
+ "evolve_error",
+ "evolve_mailer",
+ "evolve_meilisearch",
+ "evolve_redis",
+ "evolve_seaorm",
+ "evolve_ws",
+ "fancy-regex",
+ "futures",
+ "http-body-util",
+ "jsonwebtoken",
+ "meilisearch-sdk",
+ "mime",
+ "once_cell",
+ "openssl",
+ "rand 0.8.5",
+ "serde",
+ "serde_json",
+ "sha2",
+ "tokio",
+ "tower 0.4.13",
+ "tower-http",
+ "tracing",
+ "tracing-subscriber",
+ "utoipa",
+ "utoipa-rapidoc",
+ "utoipa-swagger-ui",
+ "uuid",
+]
+
+[[package]]
 name = "der"
 version = "0.7.9"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -748,108 +829,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "evolve_axum_cli"
-version = "0.0.1"
-dependencies = [
- "reqwest",
- "serde",
- "serde_json",
- "serde_repr",
- "serde_with",
- "url",
- "uuid",
-]
-
-[[package]]
-name = "evolve_axum_dao"
-version = "0.1.0"
-dependencies = [
- "async_once",
- "chrono",
- "dotenv",
- "evolve_datetime",
- "evolve_error",
- "evolve_meilisearch",
- "evolve_redis",
- "evolve_seaorm",
- "meilisearch-sdk",
- "once_cell",
- "redis",
- "redis_encoding_derive",
- "sea-orm",
- "serde",
- "serde_json",
- "tokio",
- "tokio-stream",
- "tracing",
- "tracing-subscriber",
- "utoipa",
- "uuid",
-]
-
-[[package]]
-name = "evolve_axum_main"
-version = "0.0.1"
-dependencies = [
- "anyhow",
- "axum",
- "axum-extra",
- "base64 0.22.1",
- "chrono",
- "dotenv",
- "evolve_axum_dao",
- "evolve_axum_ws",
- "evolve_datetime",
- "evolve_error",
- "evolve_mailer",
- "evolve_meilisearch",
- "evolve_redis",
- "evolve_seaorm",
- "fancy-regex",
- "futures",
- "http-body-util",
- "jsonwebtoken",
- "meilisearch-sdk",
- "mime",
- "once_cell",
- "openssl",
- "rand 0.9.0",
- "serde",
- "serde_json",
- "sha2",
- "tokio",
- "tower 0.4.13",
- "tower-http",
- "tracing",
- "tracing-subscriber",
- "utoipa",
- "utoipa-rapidoc",
- "utoipa-swagger-ui",
- "uuid",
-]
-
-[[package]]
-name = "evolve_axum_ws"
-version = "0.1.0"
-dependencies = [
- "axum",
- "dotenv",
- "evolve_error",
- "evolve_redis",
- "fancy-regex",
- "futures",
- "once_cell",
- "rand 0.9.0",
- "redis",
- "redis_encoding_derive",
- "serde",
- "serde_json",
- "tokio",
- "tracing",
- "uuid",
-]
-
-[[package]]
 name = "evolve_datetime"
 version = "0.1.0"
 dependencies = [
@@ -923,6 +902,27 @@ dependencies = [
  "once_cell",
  "sea-orm",
  "tracing",
+]
+
+[[package]]
+name = "evolve_ws"
+version = "0.1.0"
+dependencies = [
+ "axum",
+ "dotenv",
+ "evolve_error",
+ "evolve_redis",
+ "fancy-regex",
+ "futures",
+ "once_cell",
+ "rand 0.8.5",
+ "redis",
+ "redis_encoding_derive",
+ "serde",
+ "serde_json",
+ "tokio",
+ "tracing",
+ "uuid",
 ]
 
 [[package]]
