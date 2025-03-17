@@ -277,7 +277,7 @@ pub async fn send_email_code(email: &str, from: &user_model::SendEmailCodeFrom) 
         return AppError::Hint{msg:"the validation code has already send to your mail box, please check or resend after a few minutes".to_string()}.into();
     }
 
-    let code = rand::thread_rng().gen_range(100000..999999);
+    let code = rand::rng().random_range(100000..999999);
 
     let expired_seconds = 120;
 

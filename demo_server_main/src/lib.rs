@@ -30,17 +30,19 @@ use tower_http::{
 use tracing::{instrument, Level};
 use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
 use utoipa::OpenApi;
-use utoipa_rapidoc::RapiDoc;
+// use utoipa_rapidoc::RapiDoc;
 // use utoipa_redoc::{Redoc, Servable};
-// use utoipa_scalar::{Scalar, Servable as ScalarServable};
-use evolve_ws::chat_redis::{self, WSState};
+use utoipa_scalar::{Scalar, Servable as ScalarServable};
 use utoipa_swagger_ui::SwaggerUi;
 
 use std::sync::Arc;
 
 use tower_http::services::ServeDir;
 
-use evolve_ws::store_redis::RedisStore;
+use evolve_ws::{
+    chat_redis::{self, WSState},
+    store_redis::RedisStore,
+};
 
 #[no_mangle]
 pub fn start_server_sync() -> Result<(), Box<dyn Error>> {
@@ -207,8 +209,8 @@ fn web_server() -> Router {
         .merge(ws_routes)
         .merge(SwaggerUi::new("/swagger-ui").url("/api-docs/openapi.json", ApiDoc::openapi()))
         // .merge(Redoc::with_url("/redoc", ApiDoc::openapi()))
-        // .merge(Scalar::with_url("/scalar", ApiDoc::openapi()))
-        .merge(RapiDoc::new("/api-docs/openapi.json").path("/rapidoc"));
+        // .merge(RapiDoc::new("/api-docs/openapi.json").path("/rapidoc"));
+        .merge(Scalar::with_url("/scalar", ApiDoc::openapi()));
 
     app
 }

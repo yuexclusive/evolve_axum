@@ -49,7 +49,7 @@ where
     T: Store + Sync + Send + 'static,
 {
     let uid = uuid::Uuid::new_v4().to_string();
-    let uname = format!("tourist_{}", rand::thread_rng().gen_range(10000..99999));
+    let uname = format!("tourist_{}", rand::rng().random_range(10000..99999));
     let res = ws
         .on_failed_upgrade(|e| tracing::error!("Failed to upgrade websocket: {e}"))
         .on_upgrade(move |socket| websocket(socket, state, uid, uname));
