@@ -56,3 +56,6 @@ meilisearch-sdk = "0"
 http-body-util = "0"
 tower = { version = "0.4", features = ["util"] }
 mime = "0.3"
+
+# [lib]
+# crate-type = ["cdylib"]

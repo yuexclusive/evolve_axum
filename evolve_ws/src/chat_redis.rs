@@ -92,7 +92,6 @@ where
             .await
             .unwrap();
 
-    // Now send the "joined" message to all subscribers.
     let _ = publish(BoradCastContent {
         ty: BroadCastType::Join,
         from_uid: current_uid.clone(),
@@ -120,7 +119,6 @@ where
         _ = &mut recv_task => send_task.abort(),
     };
 
-    // Send "user left" message (similar to "joined" above).
     let _ = publish(BoradCastContent {
         ty: BroadCastType::Quit,
         from_uid: current_uid.clone(),
@@ -148,7 +146,7 @@ where
     Ok(tokio::spawn(async move {
         while let Some(msg) = stream.next().await {
             let content = msg.get_payload::<BoradCastContent>().unwrap();
-
+            
             let rooms = state.store.rooms(&current_uid_for_send, 1, 1000).unwrap();
             if rooms
                 .clone()
