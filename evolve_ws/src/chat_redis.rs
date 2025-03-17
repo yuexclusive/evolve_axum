@@ -92,6 +92,7 @@ where
             .await
             .unwrap();
 
+    // send join message, must after send_task
     let _ = publish(BoradCastContent {
         ty: BroadCastType::Join,
         from_uid: current_uid.clone(),
@@ -146,7 +147,7 @@ where
     Ok(tokio::spawn(async move {
         while let Some(msg) = stream.next().await {
             let content = msg.get_payload::<BoradCastContent>().unwrap();
-            
+
             let rooms = state.store.rooms(&current_uid_for_send, 1, 1000).unwrap();
             if rooms
                 .clone()
