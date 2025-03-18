@@ -3,15 +3,15 @@ use utoipa::{
     Modify, OpenApi,
 };
 
-use crate::api::auth;
-use crate::api::user;
+use crate::api::{auth, file, user};
 
 #[derive(OpenApi)]
 #[openapi(
     modifiers(&SecurityAddon),
     nest(
         (path = "/v1/auth", api = auth::JWTApi),
-        (path = "/v1/user", api = user::UserApi)
+        (path = "/v1/user", api = user::UserApi),
+        (path = "/v1/file", api = file::FileApi),
     ),
     tags(
         (name = "todo", description = "Todo items management API")

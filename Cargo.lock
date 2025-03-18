@@ -184,6 +184,7 @@ dependencies = [
  "matchit",
  "memchr",
  "mime",
+ "multer",
  "percent-encoding",
  "pin-project-lite",
  "rustversion",
@@ -643,7 +644,7 @@ dependencies = [
  "tokio-stream",
  "tracing",
  "tracing-subscriber",
- "utoipa",
+ "utoipa 5.3.1 (git+https://github.com/juhaku/utoipa.git?branch=master)",
  "uuid",
 ]
 
@@ -668,7 +669,7 @@ dependencies = [
  "serde_urlencoded",
  "thiserror 2.0.12",
  "url",
- "utoipa",
+ "utoipa 5.3.1 (git+https://github.com/juhaku/utoipa.git?branch=master)",
 ]
 
 [[package]]
@@ -701,11 +702,13 @@ dependencies = [
  "serde_json",
  "sha2",
  "tokio",
+ "tokio-util",
  "tower 0.4.13",
  "tower-http",
  "tracing",
  "tracing-subscriber",
- "utoipa",
+ "utoipa 5.3.1 (git+https://github.com/juhaku/utoipa.git?branch=master)",
+ "utoipa-axum",
  "utoipa-scalar",
  "utoipa-swagger-ui",
  "uuid",
@@ -1859,6 +1862,23 @@ dependencies = [
 ]
 
 [[package]]
+name = "multer"
+version = "3.1.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "83e87776546dc87511aa5ee218730c92b666d7264ab6ed41f9d215af9cd5224b"
+dependencies = [
+ "bytes",
+ "encoding_rs",
+ "futures-util",
+ "http",
+ "httparse",
+ "memchr",
+ "mime",
+ "spin",
+ "version_check",
+]
+
+[[package]]
 name = "native-tls"
 version = "0.2.14"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2093,6 +2113,12 @@ dependencies = [
  "smallvec",
  "windows-targets 0.52.6",
 ]
+
+[[package]]
+name = "paste"
+version = "1.0.15"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "57c0d7b74b563b49d38dae00a0c37d4d6de9b432382b2892f0574ddcae73fd0a"
 
 [[package]]
 name = "pem"
@@ -3925,12 +3951,48 @@ checksum = "b6c140620e7ffbb22c2dee59cafe6084a59b5ffc27a8859a5f0d494b5d52b6be"
 [[package]]
 name = "utoipa"
 version = "5.3.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "435c6f69ef38c9017b4b4eea965dfb91e71e53d869e896db40d1cf2441dd75c0"
+dependencies = [
+ "indexmap 2.8.0",
+ "serde",
+ "serde_json",
+ "utoipa-gen 5.3.1 (registry+https://github.com/rust-lang/crates.io-index)",
+]
+
+[[package]]
+name = "utoipa"
+version = "5.3.1"
 source = "git+https://github.com/juhaku/utoipa.git?branch=master#9c512728a9cbe7b823eaa5558d1a2bc57bd6054b"
 dependencies = [
  "indexmap 2.8.0",
  "serde",
  "serde_json",
- "utoipa-gen",
+ "utoipa-gen 5.3.1 (git+https://github.com/juhaku/utoipa.git?branch=master)",
+]
+
+[[package]]
+name = "utoipa-axum"
+version = "0.2.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "7c25bae5bccc842449ec0c5ddc5cbb6a3a1eaeac4503895dc105a1138f8234a0"
+dependencies = [
+ "axum",
+ "paste",
+ "tower-layer",
+ "tower-service",
+ "utoipa 5.3.1 (registry+https://github.com/rust-lang/crates.io-index)",
+]
+
+[[package]]
+name = "utoipa-gen"
+version = "5.3.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "a77d306bc75294fd52f3e99b13ece67c02c1a2789190a6f31d32f736624326f7"
+dependencies = [
+ "proc-macro2",
+ "quote",
+ "syn 2.0.100",
 ]
 
 [[package]]
@@ -3952,7 +4014,7 @@ dependencies = [
  "axum",
  "serde",
  "serde_json",
- "utoipa",
+ "utoipa 5.3.1 (git+https://github.com/juhaku/utoipa.git?branch=master)",
 ]
 
 [[package]]
@@ -3968,7 +4030,7 @@ dependencies = [
  "serde",
  "serde_json",
  "url",
- "utoipa",
+ "utoipa 5.3.1 (git+https://github.com/juhaku/utoipa.git?branch=master)",
  "zip",
 ]
 

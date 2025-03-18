@@ -83,6 +83,9 @@ pub enum AppError {
     #[error(transparent)]
     InvalidHeaderValue(#[from] http::header::InvalidHeaderValue),
 
+    #[error(transparent)]
+    MultipartError(#[from] axum::extract::multipart::MultipartError),
+
     #[error("other error occurred: {0}")]
     Other(#[from] anyhow::Error),
 }

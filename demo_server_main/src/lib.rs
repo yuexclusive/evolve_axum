@@ -6,6 +6,7 @@ mod service;
 
 use crate::service::user as user_service;
 use api::auth as api_jwt;
+use api::file as api_file;
 use api::user as api_user;
 use api_doc::ApiDoc;
 use axum::Json;
@@ -173,6 +174,8 @@ fn web_server() -> Router {
     let api_routes = Router::new()
         .route("/auth/authorize", post(api_jwt::authorize))
         .route("/auth/user_info", get(api_jwt::user_info))
+        .route("/file/upload", post(api_file::upload))
+        .route("/file/download/{file_name}", get(api_file::download))
         .route("/user/send_email_code", post(api_user::send_email_code))
         .route("/user/change_pwd", post(api_user::change_pwd))
         .route("/user/register", post(api_user::register))
