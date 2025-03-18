@@ -40,7 +40,7 @@ pub struct FileInfo {
 #[utoipa::path(
     post,
     path = "/upload",
-    request_body(content = inline(FileUploadReq), content_type = "multipart/form-data", description = "支持多文件上传的表单"),
+    request_body(content = inline(FileUploadReq), content_type = "multipart/form-data"),
     responses (
         (status = 200, description = "successfully", body = FileUploadResp),
         (status = 400, description = "bad request", body = ErrorResp),

@@ -53,6 +53,9 @@ evolve_mailer = { path = "../evolve_mailer" }
 meilisearch-sdk = "0"
 utoipa-axum = "0.2.0"
 tokio-util = "0.7.14"
+async-stream = "0.3.6"
+hyper = { version = "1.6.0", features = ["full"] }
+tokio-stream = "0.1.17"
 
 [dev-dependencies]
 http-body-util = "0"

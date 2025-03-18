@@ -677,6 +677,7 @@ name = "demo_server_main"
 version = "0.0.1"
 dependencies = [
  "anyhow",
+ "async-stream",
  "axum",
  "axum-extra",
  "base64 0.22.1",
@@ -692,6 +693,7 @@ dependencies = [
  "fancy-regex",
  "futures",
  "http-body-util",
+ "hyper",
  "jsonwebtoken",
  "meilisearch-sdk",
  "mime",
@@ -702,6 +704,7 @@ dependencies = [
  "serde_json",
  "sha2",
  "tokio",
+ "tokio-stream",
  "tokio-util",
  "tower 0.4.13",
  "tower-http",
