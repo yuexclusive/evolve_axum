@@ -11,5 +11,5 @@ members = [
     "evolve_mailer",
     "evolve_seaorm",
     "evolve_redis",
-    "evolve_meilisearch",
+    "evolve_meilisearch", "demo_yew",
 ]

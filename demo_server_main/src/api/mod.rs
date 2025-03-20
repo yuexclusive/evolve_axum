@@ -5,7 +5,7 @@ use serde::Serialize;
 use utoipa::ToSchema;
 pub mod paging;
 pub mod file;
-pub mod streaming;
+pub mod stream;
 
 #[derive(Serialize, ToSchema)]
 #[serde(rename_all = "snake_case")]
