@@ -11,5 +11,21 @@ members = [
     "evolve_mailer",
     "evolve_seaorm",
     "evolve_redis",
-    "evolve_meilisearch", "demo_yew",
+    "evolve_meilisearch",
+    "demo_dioxus",
 ]
+exclude = [
+    # "demo_dioxus",
+]
+
+[profile]
+
+[profile.wasm-dev]
+inherits = "dev"
+opt-level = 1
+
+[profile.server-dev]
+inherits = "dev"
+
+[profile.android-dev]
+inherits = "dev"
