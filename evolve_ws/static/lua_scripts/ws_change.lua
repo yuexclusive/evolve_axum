@@ -28,8 +28,8 @@ function Handler:service_sessions_key(service_id)
 end
 
 function Handler:join(input)
-    local session_name = input.name or (redis.call("EXISTS", self:session_name_key(input.id)) == 1 and
-        redis.call("GET", self:session_name_key(input.id))) or "undefined"
+    local session_name = input.name or (redis.call("EXISTS", self:session_name_key(input.id)) == 1 
+        and redis.call("GET", self:session_name_key(input.id))) or "undefined"
     redis.call("SET", self:session_name_key(input.id), session_name)
     redis.call("SADD", self:service_sessions_key(input.service_id), input.id)
     local time = redis.call("TIME")

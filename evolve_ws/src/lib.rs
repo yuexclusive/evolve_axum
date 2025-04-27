@@ -8,6 +8,8 @@ pub mod error;
 
 
 pub const DEFAULT_ROOM: &str = "main";
+pub const DEFAULT_ROOM_MANAGER_UID: &str = "system";
+pub const DEFAULT_ROOM_MANAGER_UNAME: &str = "system";
 pub const REDIS_WS_CHANNEL: &str = "evolve_axum_ws";
 
 #[derive(Clone, Debug, Serialize, Deserialize, PartialEq)]

@@ -16,7 +16,10 @@ use serde_json::json;
 use std::{collections::HashMap, sync::Arc};
 use tokio::task::JoinHandle;
 
-use crate::error::{WSError, WSResult};
+use crate::{
+    error::{WSError, WSResult},
+    DEFAULT_ROOM_MANAGER_UID, DEFAULT_ROOM_MANAGER_UNAME,
+};
 
 use super::{
     BoradCastContent, BroadCastType, ContentType, ReplyContent, ReplyType, DEFAULT_ROOM,
@@ -56,6 +59,20 @@ where
     Ok(res)
 }
 
+pub async fn publish_message_to_default_room(msg: &str) -> RedisResult<()> {
+    let content = BoradCastContent {
+        ty: BroadCastType::Message,
+        from_uid: DEFAULT_ROOM_MANAGER_UID.to_string(),
+        from_uname: DEFAULT_ROOM_MANAGER_UNAME.to_string(),
+        rooms: Vec::from([DEFAULT_ROOM.to_string()]),
+        msg: Some(msg.to_string()),
+    };
+
+    let res = publish(content).await?;
+
+    Ok(res)
+}
+
 async fn publish(message: BoradCastContent) -> RedisResult<()> {
     let res = evolve_redis::publish(REDIS_WS_CHANNEL, message).await?;
     Ok(res)
@@ -64,7 +81,7 @@ async fn publish(message: BoradCastContent) -> RedisResult<()> {
 // This function deals with a single websocket connection, i.e., a single
 // connected client / user, for which we will spawn two independent tasks (for
 // receiving / sending chat messages).
-pub async fn websocket<T>(stream: WebSocket, state: Arc<WSState<T>>, uid: String, uname: String)
+async fn websocket<T>(stream: WebSocket, state: Arc<WSState<T>>, uid: String, uname: String)
 where
     T: Store + Sync + Send + 'static,
 {
@@ -132,7 +149,7 @@ where
     state.store.quit(&current_uid, None).unwrap();
 }
 
-pub async fn handle_msg_from_hub<T>(
+async fn handle_msg_from_hub<T>(
     state: Arc<WSState<T>>,
     current_uid_for_send: String,
     tx_websocket: Arc<tokio::sync::Mutex<SplitSink<WebSocket, Message>>>,
@@ -185,7 +202,7 @@ where
     }))
 }
 
-pub async fn handle_msg_from_websocket<T>(
+async fn handle_msg_from_websocket<T>(
     state: Arc<WSState<T>>,
     current_uid_for_recv: String,
     mut rx_websocket: SplitStream<WebSocket>,

@@ -1,5 +1,5 @@
 use dioxus::{
-    html::textarea::rows,
+    html::{audio::src, textarea::rows},
     logger::tracing::{self, Level},
     prelude::*,
 };
@@ -20,6 +20,8 @@ const FAVICON: Asset = asset!("/assets/favicon.ico");
 // const MAIN_CSS: Asset = asset!("/assets/main.css");
 const HEADER_SVG: Asset = asset!("/assets/header.svg");
 const TAILWIND_CSS: Asset = asset!("/assets/tailwind.css");
+const TEST_1_IMAGE: Asset = asset!("/assets/1.png");
+const BUBBLE_CSS: Asset = asset!("/assets/bubble.css");
 
 fn main() {
     dioxus::logger::init(Level::DEBUG).unwrap();
@@ -60,33 +62,110 @@ pub fn Hero() -> Element {
 fn Home() -> Element {
     rsx! {
         Hero {}
-
     }
 }
 
 #[component]
 pub fn Chat() -> Element {
     rsx! {
+        document::Link {rel: "stylesheet", href: BUBBLE_CSS}
         div {
-            class: "h-screen grid grid-cols-5 gap-2",
+            class: "h-screen grid grid-cols-24 gap-0",
             div {
-                class: "bg-gray-200 col-span-1",
+                class: "col-span-1 border-r bg-gray-900 border-gray-800",
             }
             div {
-                class: "bg-yellow-50 col-span-4 relative",
+                class: "col-span-5 border-r bg-gray-950 border-gray-800 h-screen flex flex-col",
                 div {
-                    class: "left-1/2 top-10 -translate-x-1/2 absolute bg-slate-50 w-3/4 h-4/6 p-3",
-                    div {
-                        class: " bg-green-200 w-1/2 -translate-x-1/2 absolute",
-                        "hello"
+                    class: "h-20 w-full  border-gray-800 flex items-center justify-center",
+                    input{ class:"bg-gray-800 border border-gray-800 hover:border-gray-500 w-2/3 h-6 rounded-md placeholder-gray-600 placeholder-opacity-80 pl-2", placeholder:"Search"}
+                    input { 
+                        class: "bg-gray-800 border border-gray-800 hover:border-gray-500 w-1/6 h-6 rounded-md ml-2",
+                        type: "button", 
+                        value: "+"
                     }
-                    p{"1"}
-                    p{"1"}
-                    p{"1"}
                 }
-                textarea {
-                    rows: 5,
-                    class: "rounded-2xl border absolute left-1/2 bottom-10 -translate-x-1/2 w-3/4 h-1/6 resize-none p-3 hover:shadow-lg focus:shadow-lg focus:outline-none",
+                div {
+                    class: "overflow-y-auto flex-grow",
+                    for _ in 1..=20 {
+                        div {
+                            class: "w-full h-16 border-gray-800 flex items-center hover:bg-gray-700 cursor-pointer pl-3 pr-4",
+                            img {
+                                alt: "对方头像",
+                                class: "rounded-md mr-1 size-10",
+                                src: TEST_1_IMAGE
+                            },
+                            div {
+                                class: "w-full",
+                                div {
+                                    class: "flex items-center mb-1",
+                                    div {
+                                        class: "text-gray-200",
+                                        "对方昵称"
+                                    }
+                                    
+                                    div {
+                                        class: "text-gray-500 text-xs ml-auto",
+                                        "2025/4/21 21:21"
+                                    }
+                                }
+                                p {
+                                    class: "text-gray-500 text-xs",
+                                    "你发了个啥啥啥啥啥啥啥啥啥啥啥"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            div {
+                class: "bg-black col-span-18 relative h-screen flex-col flex",
+                div {
+                    class: "h-12 w-full"
+                }
+                div {
+                    class: " border-gray-800 border-b border-t p-4 w-full h-4/6 overflow-y-auto",
+                    for _ in 1..=20 {
+                        div {
+                            class: "flex items-start mb-5",
+                            img {
+                                alt: "对方头像",
+                                class: "rounded-md mr-3 size-9",
+                                src: TEST_1_IMAGE
+                            },
+                            div {
+                                class: "p-2 rounded-lg relative chat-bubble-left",
+                                p {
+                                    class: "text-gray-900 max-w-xl",
+                                    "how are you today how are you today how are you today how are you today how are you today how are you today how are you today how are you today how are you today how are you today how are you today how are you today how are you today how are you today how are you today how are you today"
+                                }
+                            }
+                        }
+                        div {
+                            class: "flex items-start justify-end mb-5",
+                            div {
+                                class: "p-2 rounded-lg relative chat-bubble-right",
+                                p {
+                                    class: "max-w-xl",
+                                    "how are you today how are you today how are you today how are you today how are you today how are you today how are you today how are you today how are you today how are you today how are you today how are you today how are you today how are you today how are you today how are you today"
+                                }
+                            },
+                            img {
+                                alt: "自己头像",
+                                class: "rounded-md ml-3 size-9",
+                                src: TEST_1_IMAGE
+                            }
+                        }
+                    }
+
+
+                }
+                div {
+                    class: "w-full flex-grow",
+                    textarea {
+                            rows: "5",
+                            class: "h-full text-slate-300 bg-transparent caret-blue-600 bottom-0 w-full resize-none hover:shadow-lg focus:shadow-lg focus:outline-none p-3",
+                        }
                 }
             }
         }

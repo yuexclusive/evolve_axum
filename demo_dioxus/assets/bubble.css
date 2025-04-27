@@ -1,0 +1,27 @@
+.chat-bubble-left {
+    background-color: #d9e5de;
+}
+
+.chat-bubble-left::after {
+    content: "";
+    position: absolute;
+    top: 0.4rem;
+    left: -0.5rem;
+    border-top: 0.75rem solid transparent;
+    border-bottom: 0.75rem solid transparent;
+    border-right: 0.75rem solid #d9e5de;
+}
+
+.chat-bubble-right {
+    background-color: #48bb78;
+}
+
+.chat-bubble-right::after {
+    content: "";
+    position: absolute;
+    top: 0.4rem;
+    right: -0.5rem;
+    border-top: 0.75rem solid transparent;
+    border-bottom: 0.75rem solid transparent;
+    border-left: 0.75rem solid #48bb78;
+}
