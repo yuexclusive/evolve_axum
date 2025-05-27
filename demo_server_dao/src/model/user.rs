@@ -21,6 +21,7 @@ pub enum UserStatus {
     Disabled,
 }
 
+
 #[derive(ToSchema, Deserialize, Debug)]
 pub enum SendEmailCodeFrom {
     Register,

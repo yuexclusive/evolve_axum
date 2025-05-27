@@ -15,7 +15,7 @@ use crate::api::{auth, file, stream, user};
         (path = "/v1/stream", api = stream::StreamApi),
     ),
     tags(
-        (name = "todo", description = "Todo items management API")
+        (name = "demo api", description = "Demo items management API")
     )
 )]
 pub struct ApiDoc;

@@ -69,6 +69,7 @@ pub fn from_redis(_param: TokenStream, input: TokenStream) -> TokenStream {
     impl_from_redis_value(&mut ast)
 }
 
+
 fn impl_from_redis_value(ast: &mut syn::DeriveInput) -> TokenStream {
     for x in common(&ast.attrs) {
         let t = syn::parse_str::<syn::Type>(&x).unwrap();

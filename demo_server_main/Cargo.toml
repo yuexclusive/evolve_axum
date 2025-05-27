@@ -23,18 +23,18 @@ utoipa = { git = "https://github.com/juhaku/utoipa.git", branch = "master", feat
 # utoipa-redoc = { git = "https://github.com/juhaku/utoipa.git", branch = "master", features = [
 #     "axum",
 # ] }
-# utoipa-rapidoc = { git = "https://github.com/juhaku/utoipa.git", branch = "master", features = [
-#     "axum",
-# ] }
-utoipa-scalar = { git = "https://github.com/juhaku/utoipa.git", branch = "master", features = [
+utoipa-rapidoc = { git = "https://github.com/juhaku/utoipa.git", branch = "master", features = [
     "axum",
 ] }
+# utoipa-scalar = { git = "https://github.com/juhaku/utoipa.git", branch = "master", features = [
+#     "axum",
+# ] }
 utoipa-swagger-ui = { git = "https://github.com/juhaku/utoipa.git", branch = "master", features = [
     "axum",
 ] }
 
 futures = "0"
-rand = "0"
+rand = "0.9.1"
 base64 = "0"
 fancy-regex = "0"
 sha2 = "0"

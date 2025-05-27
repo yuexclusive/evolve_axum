@@ -12,10 +12,10 @@ members = [
     "evolve_seaorm",
     "evolve_redis",
     "evolve_meilisearch",
-    "demo_dioxus",
+    # "demo_dioxus",
 ]
 exclude = [
-    # "demo_dioxus",
+    "demo_dioxus",
 ]
 
 [profile]

@@ -80,7 +80,7 @@ pub fn Chat() -> Element {
                     class: "h-20 w-full  border-gray-800 flex items-center justify-center",
                     input{ class:"bg-gray-800 border border-gray-800 hover:border-gray-500 w-2/3 h-6 rounded-md placeholder-gray-600 placeholder-opacity-80 pl-2", placeholder:"Search"}
                     input { 
-                        class: "bg-gray-800 border border-gray-800 hover:border-gray-500 w-1/6 h-6 rounded-md ml-2",
+                        class: "bg-gray-800 border border-gray-800 hover:border-gray-500 w-10 h-6 rounded-md ml-2",
                         type: "button", 
                         value: "+"
                     }
@@ -119,7 +119,7 @@ pub fn Chat() -> Element {
                 }
             }
             div {
-                class: "bg-black col-span-18 relative h-screen flex-col flex",
+                class: "bg-black col-span-18 relative h-screen flex-col flex overflow-hidden",
                 div {
                     class: "h-12 w-full"
                 }

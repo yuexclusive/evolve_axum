@@ -13,7 +13,7 @@ ingress_install:
 linkerd_check:
 	linkerd check
 linkerd_viz_install:
-	linkerd viz install | kubectl apply -f -
+	linkerd viz install --set jaeger.enabled=true | kubectl apply -f -
 injectall:
 	kubectl annotate namespace demo linkerd.io/inject=enabled
 uninjectall:

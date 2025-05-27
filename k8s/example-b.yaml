@@ -1,0 +1,91 @@
+# 创建命名空间
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: demo
+
+---
+
+# 部署服务B的v1版本
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: service-b-v1
+  namespace: demo
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: service-b
+      version: v1
+  template:
+    metadata:
+      labels:
+        app: service-b
+        version: v1
+    spec:
+      containers:
+        - name: service-b-container
+          image: your-service-b-image:v1
+          ports:
+            - containerPort: 80
+
+---
+
+# 部署服务B的v2版本
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: service-b-v2
+  namespace: demo
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: service-b
+      version: v2
+  template:
+    metadata:
+      labels:
+        app: service-b
+        version: v2
+    spec:
+      containers:
+        - name: service-b-container
+          image: your-service-b-image:v2
+          ports:
+            - containerPort: 80
+
+---
+
+# 创建服务B的统一服务入口
+apiVersion: v1
+kind: Service
+metadata:
+  name: service-b
+  namespace: demo
+spec:
+  ports:
+    - name: http
+      port: 80
+      targetPort: 80
+  selector:
+    app: service-b
+---
+
+apiVersion: policy.linkerd.io/v1beta2
+kind: HTTPRoute
+metadata:
+  name: service-b-route
+  namespace: demo
+spec:
+  rules:
+  - matches:
+    - path:
+        type: Prefix
+        value: "/"
+    forwardTo:
+    - service: service-b-v1
+      weight: 20
+    - service: service-b-v2
+      weight: 80
